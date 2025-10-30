@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Solinth Light Mode Colors */
+    --background: 0 0% 100%; /* Solar White */
+    --foreground: 210 22% 22%; /* Dusk Slate */
+    --card: 0 0% 100%;
+    --card-foreground: 210 22% 22%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 22% 22%;
+    --primary: 32 100% 64%; /* Radiant Amber */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 39 35% 84%; /* Midday Sand */
+    --secondary-foreground: 210 22% 22%;
+    --muted: 214 32% 91%; /* Sky Mist */
+    --muted-foreground: 210 22% 22%;
+    --accent: 32 100% 64%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 32 100% 64%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* Solinth Dark Mode Colors */
+    --background: 210 22% 7%; /* Eclipse Black */
+    --foreground: 0 0% 100%; /* Solar White */
+    --card: 210 15% 12%; /* Midnight Graphite */
+    --card-foreground: 0 0% 100%;
+    --popover: 210 15% 12%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 32 100% 64%; /* Radiant Amber */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 15% 12%;
+    --secondary-foreground: 214 32% 91%;
+    --muted: 210 15% 12%;
+    --muted-foreground: 214 32% 91%;
+    --accent: 32 100% 64%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 15% 12%;
+    --input: 210 15% 12%;
+    --ring: 32 100% 64%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Solinth Glass Effects */
+@layer components {
+  .glass-card {
+    @apply relative overflow-hidden rounded-xl;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(255, 255, 255, 0.92) 50%,
+      rgba(255, 255, 255, 0.95) 100%
+    );
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1.5px solid rgba(255, 165, 69, 0.15);
+    box-shadow:
+      inset 0 1px 2px rgba(255, 255, 255, 1),
+      0 8px 32px rgba(255, 165, 69, 0.12),
+      0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 1px 2px rgba(255, 255, 255, 1),
+      0 12px 40px rgba(255, 165, 69, 0.18),
+      0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .glass-card {
+    background: linear-gradient(
+      135deg,
+      rgba(28, 31, 36, 0.95) 0%,
+      rgba(28, 31, 36, 0.88) 50%,
+      rgba(28, 31, 36, 0.92) 100%
+    );
+    border: 1.5px solid rgba(255, 165, 69, 0.25);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 12px 40px rgba(255, 165, 69, 0.15),
+      0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  .dark .glass-card:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 16px 48px rgba(255, 165, 69, 0.2),
+      0 6px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  .glass-elevated {
+    @apply glass-card;
+    transform: translateY(-4px);
+    box-shadow:
+      inset 0 1px 2px rgba(255, 255, 255, 1),
+      0 16px 48px rgba(255, 165, 69, 0.2),
+      0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  .glass-interactive {
+    @apply glass-card cursor-pointer;
+  }
+
+  .glass-interactive:active {
+    transform: translateY(0);
+  }
+
+  .glass-glow {
+    @apply glass-card;
+    animation: glassGlow 2s ease-in-out infinite alternate;
+  }
+
+  /* Solinth gradients */
+  .bg-solar-gradient {
+    background: linear-gradient(135deg, #ffa845 0%, #ffd67c 100%);
+  }
+
+  .bg-solar-flare {
+    background: linear-gradient(135deg, #ffb347 0%, #ffce73 100%);
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/50 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/70;
+  }
+}

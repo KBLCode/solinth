@@ -1,0 +1,3 @@
+project_name: Solinth
+language: typescript
+description: "All-in-one business management platform with 8 integrated suites - Next.js 15, tRPC, Supabase"
