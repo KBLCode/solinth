@@ -3,6 +3,9 @@
  * Validates Prisma schema and database client setup
  */
 
+import { config } from "dotenv";
+config(); // Load environment variables
+
 import { prisma, createTenantClient, checkDatabaseHealth } from "../src/lib/db";
 
 async function testDatabaseSetup() {
