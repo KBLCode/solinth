@@ -1,0 +1,330 @@
+// Solinth Suite Database Schema
+// Multi-tenant SaaS platform with Row-Level Security
+// Based on SDD Lines 45-240
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================================
+// CORE MODELS - Multi-tenant foundation
+// ============================================================================
+
+model Tenant {
+  id               String  @id @default(cuid())
+  name             String
+  slug             String  @unique // for subdomains
+  plan             PlanType @default(FREE)
+  stripeCustomerId String? @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  users         User[]
+  dashboards    Dashboard[]
+  integrations  Integration[]
+  metrics       Metric[]
+  reports       Report[]
+  workflows     Workflow[]
+  customApis    CustomApi[]
+  brandAssets   BrandAsset[]
+  aiTokenUsage  AiTokenUsage[]
+
+  @@map("tenants")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  tenantId     String
+  email        String
+  name         String?
+  role         UserRole  @default(MEMBER)
+  avatarUrl    String?
+  createdAt    DateTime  @default(now())
+  lastActiveAt DateTime  @default(now())
+
+  // Relations
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  dashboards Dashboard[]
+  comments   Comment[]
+  auditLogs  AuditLog[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+  @@map("users")
+}
+
+model Dashboard {
+  id         String        @id @default(cuid())
+  tenantId   String
+  userId     String
+  name       String
+  type       DashboardType
+  config     Json          // Widget positions, sizes, settings
+  isPublic   Boolean       @default(false)
+  shareToken String?       @unique
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  // Relations
+  tenant  Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  widgets Widget[]
+
+  @@index([tenantId])
+  @@index([userId])
+  @@map("dashboards")
+}
+
+model Integration {
+  id          String            @id @default(cuid())
+  tenantId    String
+  type        IntegrationType   // STRIPE, QUICKBOOKS, etc
+  credentials Json              // OAuth tokens (encrypted)
+  config      Json              // Sync frequency, settings
+  status      IntegrationStatus
+  lastSyncAt  DateTime?
+  lastErrorAt DateTime?
+  lastError   String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // Relations
+  tenant  Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  metrics Metric[]
+
+  @@unique([tenantId, type])
+  @@index([tenantId])
+  @@map("integrations")
+}
+
+model Metric {
+  id            String    @id @default(cuid())
+  tenantId      String
+  integrationId String?
+  name          String
+  value         Decimal
+  unit          String?
+  timestamp     DateTime
+  dimensions    Json      // Product, customer, category, etc
+  createdAt     DateTime  @default(now())
+
+  // Relations
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  integration Integration? @relation(fields: [integrationId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, name, timestamp])
+  @@index([integrationId])
+  @@map("metrics")
+}
+
+model CustomApi {
+  id        String    @id @default(cuid())
+  tenantId  String
+  name      String
+  url       String
+  method    String
+  headers   Json?
+  body      Json?
+  schedule  String?   // Cron expression
+  rateLimit Int       @default(60) // requests per minute
+  status    ApiStatus
+  lastRunAt DateTime?
+  metrics   Json      // Mapped fields to metrics
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("custom_apis")
+}
+
+// ============================================================================
+// ADDITIONAL MODELS - Referenced in relations
+// ============================================================================
+
+model Widget {
+  id          String    @id @default(cuid())
+  dashboardId String
+  type        String    // chart, metric, table, etc
+  config      Json      // Widget-specific configuration
+  position    Json      // x, y, width, height
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  dashboard Dashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+
+  @@index([dashboardId])
+  @@map("widgets")
+}
+
+model Report {
+  id          String    @id @default(cuid())
+  tenantId    String
+  name        String
+  description String?
+  config      Json      // Report configuration
+  schedule    String?   // Cron expression for automated reports
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("reports")
+}
+
+model Workflow {
+  id          String    @id @default(cuid())
+  tenantId    String
+  name        String
+  description String?
+  config      Json      // Workflow steps and conditions
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("workflows")
+}
+
+model BrandAsset {
+  id        String    @id @default(cuid())
+  tenantId  String
+  name      String
+  type      String    // logo, color, font, etc
+  url       String?   // File URL
+  config    Json      // Asset-specific configuration
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("brand_assets")
+}
+
+model AiTokenUsage {
+  id        String   @id @default(cuid())
+  tenantId  String
+  model     String   // gpt-4, claude-3, etc
+  tokens    Int
+  cost      Decimal
+  purpose   String   // chat, analysis, generation, etc
+  createdAt DateTime @default(now())
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt])
+  @@map("ai_token_usage")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  userId    String
+  content   String
+  entityId  String   // ID of the entity being commented on
+  entityType String  // dashboard, report, metric, etc
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([entityId, entityType])
+  @@map("comments")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String   // create, update, delete, view
+  entityId  String   // ID of the entity
+  entityType String  // user, dashboard, metric, etc
+  changes   Json?    // What changed
+  metadata  Json?    // Additional context
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([entityId, entityType])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum PlanType {
+  FREE
+  PRO
+  BUSINESS
+  ENTERPRISE
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  MANAGER
+  MEMBER
+  VIEWER
+  CLIENT // For agency client access
+}
+
+enum DashboardType {
+  BUSINESS
+  CREATIVE
+  DIRECTORS
+  BRAND
+  REPORTING
+  SUPPORT
+  SECURITY
+  CUSTOM
+}
+
+enum IntegrationType {
+  STRIPE
+  QUICKBOOKS
+  GOOGLE_ANALYTICS
+  GOOGLE_ADS
+  SALESFORCE
+  HUBSPOT
+  SHOPIFY
+  MAILCHIMP
+  CRISP
+  POSTBRIDGE
+}
+
+enum IntegrationStatus {
+  CONNECTED
+  ERROR
+  DISABLED
+  SYNCING
+}
+
+enum ApiStatus {
+  ACTIVE
+  PAUSED
+  ERROR
+  BLOCKED
+}
