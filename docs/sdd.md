@@ -10,58 +10,98 @@ Core Technologies
 Frontend Framework
 
 - Next.js 15 with App Router
-  _ Rationale: Server components reduce client bundle, excellent SEO, built-in optimizations
-  _ PRD Reference: Lines 701-750 (Non-Functional Requirements - Performance)
-  Styling & UI
-- Tailwind CSS with custom design tokens
-- Framer Motion for animations (60fps requirement)
+  - Rationale: Server components reduce client bundle, excellent SEO, built-in optimizations
+  - PRD Reference: Lines 417-418 (Architecture)
+  - TypeScript: Strict mode enforced (no implicit any, strict null checks)
+
+Styling & UI
+
+- Tailwind CSS 4.0 with Solinth design tokens (Solar White, Radiant Amber)
+- Framer Motion for glassmorphic animations (60fps requirement)
 - Radix UI primitives for accessibility
-  _ Rationale: Meets WCAG 2.1 AA requirement, composable primitives
-  _ PRD Reference: Lines 501-600 (Design Requirements)
-  API Layer
-- tRPC for type-safe APIs
-  _ Rationale: End-to-end type safety, reduces bugs, excellent DX
-  _ PRD Reference: Lines 151-250 (Integration Hub feature)
-  Database
+  - Rationale: Meets WCAG 2.1 AA requirement, composable primitives
+  - PRD Reference: Lines 362-367 (Security & Design)
+
+API Layer
+
+- tRPC 11.x for type-safe APIs
+  - Rationale: End-to-end type safety, reduces bugs, excellent DX
+  - TypeScript strict mode ensures no runtime type errors
+  - PRD Reference: Lines 418 (Backend Architecture)
+
+Authentication & Authorization
+
+- Better Auth (https://www.better-auth.com/)
+  - TypeScript-native authentication framework
+  - Prisma adapter for direct database integration
+  - Organization plugin for multi-tenant support
+  - Custom Solinth-branded UI (glassmorphic design)
+  - Features:
+    - Email/Password with verification
+    - Social OAuth (GitHub, Google, Discord)
+    - Two-Factor Authentication (TOTP)
+    - Role-based access control (OWNER, ADMIN, MEMBER, VIEWER)
+    - Team invitations and management
+    - Organization switching
+  - Rationale: 100% custom UI control, TypeScript-native, no vendor lock-in
+  - PRD Reference: Lines 362-377 (Security Requirements)
+  - SDD Reference: Lines 994-1033 (Authentication Architecture)
+
+Database
+
 - Supabase (PostgreSQL with Row-Level Security)
-  _ Rationale: Built-in auth, real-time, RLS for multi-tenancy
-  _ PRD Reference: Lines 701-750 (Security Requirements)
-  File Storage
+  - Connection: Supabase Pooler (Transaction mode - port 6543)
+  - ORM: Prisma 6.17 with Supabase adapter
+  - Rationale: Managed PostgreSQL, built-in RLS, real-time capabilities
+  - PRD Reference: Lines 365, 419 (Multi-tenancy & Database)
+
+File Storage
+
 - Cloudflare R2 for large files
-- Supabase Storage for small assets \* Rationale: R2 has no egress fees, cost-effective at scale
-  AI Infrastructure
+- Supabase Storage for small assets
+  - Rationale: R2 has no egress fees, cost-effective at scale
+
+AI Infrastructure
+
 - OpenRouter for LLM routing
-  _ Rationale: Provider flexibility, cost optimization
-  _ PRD Reference: Lines 251-350 (AI Assistant features)
-  Background Jobs
-- Inngest for queues and scheduling \* Rationale: Serverless-friendly, better than cron at scale
-  Analytics & Monitoring
+  - Rationale: Provider flexibility, cost optimization
+  - PRD Reference: Lines 422 (AI/ML)
+
+Background Jobs
+
+- Inngest for queues and scheduling
+  - Rationale: Serverless-friendly, better than cron at scale
+  - PRD Reference: Lines 423 (Queue)
+
+Analytics & Monitoring
+
 - PostHog for product analytics
 - Sentry for error tracking
 - BetterStack for uptime monitoring
-  Database Architecture
-  Schema Design
-  PRD Reference: Lines 151-500 (All Features requiring data storage)
-  // Multi-tenant foundation - EVERY table has tenantId
-  model Tenant {
-  id String @id @default(cuid())
-  name String
-  slug String @unique // for subdomains
-  plan PlanType @default(FREE)
-  stripeCustomerId String? @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  // Relations
-  users User[]
-  dashboards Dashboard[]
-  integrations Integration[]
-  metrics Metric[]
-  reports Report[]
-  workflows Workflow[]
-  customApis CustomApi[]
-  brandAssets BrandAsset[]
-  aiTokenUsage AiTokenUsage[]
-  }
+  - PRD Reference: Lines 424 (Monitoring)
+    Database Architecture
+    Schema Design
+    PRD Reference: Lines 151-500 (All Features requiring data storage)
+    // Multi-tenant foundation - EVERY table has tenantId
+    model Tenant {
+    id String @id @default(cuid())
+    name String
+    slug String @unique // for subdomains
+    plan PlanType @default(FREE)
+    stripeCustomerId String? @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    // Relations
+    users User[]
+    dashboards Dashboard[]
+    integrations Integration[]
+    metrics Metric[]
+    reports Report[]
+    workflows Workflow[]
+    customApis CustomApi[]
+    brandAssets BrandAsset[]
+    aiTokenUsage AiTokenUsage[]
+    }
 
 model User {
 id String @id @default(cuid())
@@ -991,46 +1031,185 @@ Production Deployment
 ]
 }
 Security Architecture
-Authentication & Authorization
-PRD Reference: Lines 701-750 (Security requirements)
-// lib/auth/middleware.ts
-export function withAuth(handler: NextApiHandler) {
-return async (req: NextApiRequest, res: NextApiResponse) => {
-// Verify JWT
-const token = req.headers.authorization?.replace('Bearer ', '');
-if (!token) {
-return res.status(401).json({ error: 'Unauthorized' });
+Authentication & Authorization (Better Auth)
+PRD Reference: Lines 362-365, 439 (Authentication & Security)
+Provider: Better Auth (https://www.better-auth.com/)
+TypeScript: Strict mode enforced across all auth code
+
+// lib/auth/auth.ts - Better Auth Server Configuration
+import { betterAuth } from "better-auth"
+import { prismaAdapter } from "better-auth/adapters/prisma"
+import { organization, twoFactor } from "better-auth/plugins"
+import { prisma } from "@/lib/db"
+import { ac, owner, admin, member, viewer } from "./permissions"
+
+export const auth = betterAuth({
+database: prismaAdapter(prisma, {
+provider: "postgresql"
+}),
+emailAndPassword: {
+enabled: true,
+requireEmailVerification: true
+},
+socialProviders: {
+github: {
+clientId: process.env.GITHUB_CLIENT_ID as string,
+clientSecret: process.env.GITHUB_CLIENT_SECRET as string
+},
+google: {
+clientId: process.env.GOOGLE_CLIENT_ID as string,
+clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
+}
+},
+plugins: [
+organization({
+ac,
+roles: { owner, admin, member, viewer },
+allowUserToCreateOrganization: true,
+organizationLimit: 5,
+membershipLimit: 100,
+sendInvitationEmail: async (data) => {
+const inviteLink = `${process.env.BETTER_AUTH_URL}/accept-invitation/${data.id}`
+await sendEmail({
+to: data.email,
+subject: `Join ${data.organization.name} on Solinth`,
+html: solinthInvitationTemplate({
+inviterName: data.inviter.user.name,
+organizationName: data.organization.name,
+inviteLink
+})
+})
+}
+}),
+twoFactor()
+]
+})
+
+// lib/auth/auth-client.ts - Better Auth Client
+import { createAuthClient } from "better-auth/react"
+import { organizationClient } from "better-auth/client/plugins"
+import { ac, owner, admin, member, viewer } from "./permissions"
+
+export const authClient = createAuthClient({
+baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
+plugins: [
+organizationClient({
+ac,
+roles: { owner, admin, member, viewer }
+})
+]
+})
+
+export const {
+signIn,
+signUp,
+signOut,
+useSession,
+useActiveOrganization,
+organization
+} = authClient
+
+// lib/auth/permissions.ts - Solinth Access Control
+import { createAccessControl } from "better-auth/plugins/access"
+
+const statement = {
+// Solinth-specific resources
+dashboard: ["create", "read", "update", "delete"],
+metric: ["create", "read", "update", "delete"],
+integration: ["create", "read", "update", "delete"],
+report: ["create", "read", "update", "delete"],
+widget: ["create", "read", "update", "delete"],
+workflow: ["create", "read", "update", "delete"],
+// Organization resources (Better Auth built-in)
+organization: ["update", "delete"],
+member: ["create", "update", "delete"],
+invitation: ["create", "cancel"]
+} as const
+
+export const ac = createAccessControl(statement)
+
+// Solinth Role Definitions
+export const owner = ac.newRole({
+dashboard: ["create", "read", "update", "delete"],
+metric: ["create", "read", "update", "delete"],
+integration: ["create", "read", "update", "delete"],
+report: ["create", "read", "update", "delete"],
+widget: ["create", "read", "update", "delete"],
+workflow: ["create", "read", "update", "delete"],
+organization: ["update", "delete"],
+member: ["create", "update", "delete"],
+invitation: ["create", "cancel"]
+})
+
+export const admin = ac.newRole({
+dashboard: ["create", "read", "update", "delete"],
+metric: ["create", "read", "update", "delete"],
+integration: ["create", "read", "update"],
+report: ["create", "read", "update", "delete"],
+widget: ["create", "read", "update", "delete"],
+workflow: ["create", "read", "update"],
+organization: ["update"],
+member: ["create", "update", "delete"],
+invitation: ["create", "cancel"]
+})
+
+export const member = ac.newRole({
+dashboard: ["read"],
+metric: ["read"],
+integration: ["read"],
+report: ["read"],
+widget: ["read"],
+workflow: ["read"],
+organization: [],
+member: [],
+invitation: []
+})
+
+export const viewer = ac.newRole({
+dashboard: ["read"],
+metric: ["read"],
+integration: [],
+report: ["read"],
+widget: [],
+workflow: [],
+organization: [],
+member: [],
+invitation: []
+})
+
+// lib/auth/middleware.ts - Route Protection
+import { auth } from "./auth"
+import { NextRequest, NextResponse } from "next/server"
+
+export async function authMiddleware(request: NextRequest) {
+const session = await auth.api.getSession({
+headers: request.headers
+})
+
+if (!session) {
+return NextResponse.redirect(new URL('/login', request.url))
 }
 
-    try {
-      const payload = await verifyJWT(token);
-
-      // Set tenant context for RLS
-      await prisma.$executeRaw`
-        SET LOCAL app.tenant_id = ${payload.tenantId}
-      `;
-
-      // Check permissions
-      const hasPermission = await checkPermission(
-        payload.userId,
-        req.method,
-        req.url
-      );
-
-      if (!hasPermission) {
-        return res.status(403).json({ error: 'Forbidden' });
-      }
-
-      // Attach to request
-      req.user = payload;
-
-      return handler(req, res);
-    } catch (error) {
-      return res.status(401).json({ error: 'Invalid token' });
-    }
-
-};
+// Set tenant context for RLS if organization is active
+if (session.activeOrganizationId) {
+// Tenant context will be set in tRPC context
+request.headers.set('x-tenant-id', session.activeOrganizationId)
 }
+
+return NextResponse.next()
+}
+
+// app/api/auth/[...all]/route.ts - Better Auth API Handler
+import { auth } from "@/lib/auth/auth"
+import { toNextJsHandler } from "better-auth/next-js"
+
+export const { POST, GET } = toNextJsHandler(auth)
+
+// TypeScript strict mode ensures:
+// - No implicit any types
+// - Strict null checks
+// - Strict function types
+// - All Better Auth types properly inferred
 Audit Logging
 // lib/audit/logger.ts
 export class AuditLogger {

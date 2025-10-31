@@ -47,27 +47,75 @@ Actions:
 - [ ] Tenant isolation verified
 - [ ] Migrations run successfully
 - [ ] Seed data loads correctly
-      Task 1.3: Authentication System
-      Priority: P0Estimated Time: 32 hoursPRD Reference: Lines 701-750 (Security Requirements)SDD Reference: Lines 850-950 (Authentication Architecture)
+      Task 1.3: Authentication System (Better Auth)
+      Priority: P0
+      Estimated Time: 32 hours
+      PRD Reference: Lines 362-365, 439 (Authentication & Security)
+      SDD Reference: Lines 994-1033 (Authentication & Authorization)
+      Tech Stack: Better Auth (https://www.better-auth.com/)
+      TypeScript: Strict mode enforced
       Actions:
 
-1. Configure Supabase Auth or Clerk
-2. Implement JWT verification
-3. Create auth middleware
-4. Build login/signup pages
-5. Implement MFA setup
-   Files to Create:
+1. Install Better Auth with Prisma adapter
+2. Configure Better Auth server instance with organization plugin
+3. Generate Better Auth database schema and run migrations
+4. Create API route handler (/app/api/auth/[...all]/route.ts)
+5. Set up Better Auth client with React hooks
+6. Build custom Solinth-branded login UI (glassmorphic)
+7. Build custom Solinth-branded signup UI (glassmorphic)
+8. Implement MFA setup component with QR codes
+9. Create organization switcher component
+10. Add auth middleware for route protection
+11. Configure access control with Solinth roles (OWNER, ADMIN, MEMBER, VIEWER)
+12. Set up email templates for invitations and verification
+13. Integrate with existing Prisma/Supabase database
+14. Test multi-tenant isolation with Better Auth organizations
 
-- /lib/auth/provider.ts → Auth configuration
-- /lib/auth/middleware.ts → Route protection
-- /app/(auth)/login/page.tsx → Login page
-- /app/(auth)/signup/page.tsx → Signup page
-- /components/auth/mfa-setup.tsx → MFA component
+Files to Create:
+
+- /lib/auth/auth.ts → Better Auth server configuration
+- /lib/auth/auth-client.ts → Better Auth client instance
+- /lib/auth/permissions.ts → Access control definitions (Solinth roles)
+- /lib/auth/middleware.ts → Route protection middleware
+- /app/api/auth/[...all]/route.ts → Better Auth API handler
+- /app/(auth)/login/page.tsx → Custom login page (Solinth glassmorphic)
+- /app/(auth)/signup/page.tsx → Custom signup page (Solinth glassmorphic)
+- /app/(auth)/verify-email/page.tsx → Email verification page
+- /app/(auth)/reset-password/page.tsx → Password reset page
+- /components/auth/login-form.tsx → Glassmorphic login form
+- /components/auth/signup-form.tsx → Glassmorphic signup form
+- /components/auth/mfa-setup.tsx → MFA configuration component
+- /components/auth/org-switcher.tsx → Organization switcher dropdown
+- /components/auth/protected-route.tsx → Route protection wrapper
+
+  Environment Variables:
+
+- BETTER_AUTH_SECRET → Generated secret key
+- BETTER_AUTH_URL → Base URL (http://localhost:3000)
+- GITHUB_CLIENT_ID → GitHub OAuth (optional)
+- GITHUB_CLIENT_SECRET → GitHub OAuth (optional)
+- GOOGLE_CLIENT_ID → Google OAuth (optional)
+- GOOGLE_CLIENT_SECRET → Google OAuth (optional)
+
   Validation:
-- [ ] Users can sign up and log in
-- [ ] JWT tokens properly verified
-- [ ] Protected routes require auth
-- [ ] MFA can be enabled
+
+- [ ] Better Auth installed and configured with Prisma adapter
+- [ ] Database schema generated and migrated
+- [ ] Users can sign up with email/password
+- [ ] Users can log in with email/password
+- [ ] Social OAuth works (GitHub, Google)
+- [ ] JWT tokens properly verified via Better Auth
+- [ ] Protected routes require authentication
+- [ ] MFA can be enabled and verified
+- [ ] Organizations created during signup
+- [ ] Organization switcher works
+- [ ] Multi-tenant isolation verified
+- [ ] Custom Solinth UI matches brand (glassmorphic, Solar White, Radiant Amber)
+- [ ] TypeScript strict mode passes with no errors
+- [ ] Access control enforced (OWNER, ADMIN, MEMBER, VIEWER roles)
+- [ ] Email verification works
+- [ ] Password reset works
+- [ ] Invitation emails sent successfully
       Task 1.4: Multi-Tenant Architecture
       Priority: P0Estimated Time: 40 hoursPRD Reference: Lines 701-750 (Multi-tenancy)SDD Reference: Lines 320-400 (RLS Implementation)
       Actions:

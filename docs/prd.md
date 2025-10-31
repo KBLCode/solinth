@@ -359,12 +359,22 @@ P0: Tool Fragmentation Crisis
 - Concurrent Users: Support 10,000 simultaneous
 - Uptime: 99.9% SLA
   Security
-- Authentication: Multi-factor authentication
+- Authentication: Better Auth (https://www.better-auth.com/) with multi-factor authentication
+  - Email/Password with verification
+  - Social OAuth (GitHub, Google, Discord)
+  - Two-Factor Authentication (TOTP)
+  - Custom Solinth-branded UI (glassmorphic design)
+  - TypeScript strict mode enforced
+- Session Management: JWT tokens with HTTP-only cookies
+- Multi-Tenant Organizations: Better Auth organization plugin
+  - Role-based access control (OWNER, ADMIN, MEMBER, VIEWER)
+  - Team invitations and management
+  - Organization switching
 - Encryption: AES-256 at rest, TLS 1.3 in transit
 - Compliance: GDPR, SOC2 Type II, CCPA
-- Multi-tenancy: Row-level security in database
+- Multi-tenancy: Row-level security in database (PostgreSQL RLS)
 - Audit Logging: All user actions tracked
-- API Security: Rate limiting, HTTPS-only
+- API Security: Rate limiting, HTTPS-only, CSRF protection
   Scalability
 - Users: Support 1 million+ users
 - Data: Handle petabytes of metrics data
@@ -407,13 +417,20 @@ P0: Tool Fragmentation Crisis
 - Frontend: Next.js 15 with App Router
 - Backend: tRPC for type-safe APIs
 - Database: Supabase (PostgreSQL with RLS)
+- Authentication: Better Auth (https://www.better-auth.com/)
+  - TypeScript-native with Prisma adapter
+  - Multi-tenant organizations with teams
+  - Custom Solinth-branded UI (glassmorphic)
+  - Email/Password + Social OAuth + MFA
+  - Role-based access control (OWNER, ADMIN, MEMBER, VIEWER)
 - Real-time: WebSockets/SSE for live updates
 - Storage: Cloudflare R2 for files
 - AI/ML: OpenRouter for model flexibility
 - Queue: Inngest for background jobs
 - Monitoring: PostHog, Sentry, BetterStack
   Development Standards
-- TypeScript: Strict mode enforced
+- TypeScript: Strict mode enforced (no implicit any, strict null checks)
+- Authentication: Better Auth with custom Solinth UI
 - Testing: 80% code coverage minimum
 - CI/CD: Automated deployment pipeline
 - Documentation: Comprehensive API docs
