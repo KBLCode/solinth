@@ -1,6 +1,7 @@
 // Solinth Suite Database Schema
-// Multi-tenant SaaS platform with Row-Level Security
+// Multi-tenant SaaS platform with Row-Level Security + Better Auth
 // Based on SDD Lines 45-240
+// Better Auth Integration: https://www.better-auth.com/docs/adapters/prisma
 
 generator client {
   provider = "prisma-client-js"
@@ -13,41 +14,196 @@ datasource db {
 }
 
 // ============================================================================
-// CORE MODELS - Multi-tenant foundation
+// BETTER AUTH MODELS - Authentication & Authorization
+// ============================================================================
+
+// Better Auth core user table (authentication identity)
+
+model AuthUser {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations to Better Auth tables
+  sessions AuthSession[]
+  accounts AuthAccount[]
+  members  AuthMember[]
+
+  // Link to Solinth application user
+  solinthUser User?
+
+  @@map("auth_users")
+}
+
+// Better Auth session table
+
+model AuthSession {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Organization context for multi-tenancy
+  activeOrganizationId String?
+
+  // Relations
+  user AuthUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("auth_sessions")
+}
+
+// Better Auth account table (OAuth providers)
+
+model AuthAccount {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  // Relations
+  user AuthUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("auth_accounts")
+}
+
+// Better Auth verification table (email verification, password reset)
+
+model AuthVerification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, value])
+  @@map("auth_verifications")
+}
+
+// Better Auth organization table (multi-tenant organizations)
+
+model AuthOrganization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  logo      String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  // Link to Solinth Tenant (1:1 relationship)
+  tenantId String @unique
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Relations
+  members     AuthMember[]
+  invitations AuthInvitation[]
+
+  @@map("auth_organizations")
+}
+
+// Better Auth member table (organization membership)
+
+model AuthMember {
+  id             String   @id @default(cuid())
+  userId         String
+  organizationId String
+  role           String // owner, admin, member, viewer
+  createdAt      DateTime @default(now())
+
+  // Relations
+  user         AuthUser         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization AuthOrganization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([userId])
+  @@index([organizationId])
+  @@map("auth_members")
+}
+
+// Better Auth invitation table (pending organization invitations)
+
+model AuthInvitation {
+  id             String   @id @default(cuid())
+  email          String
+  inviterId      String
+  organizationId String
+  role           String
+  status         String // pending, accepted, rejected, cancelled
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+
+  // Relations
+  organization AuthOrganization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([organizationId])
+  @@map("auth_invitations")
+}
+
+// ============================================================================
+// SOLINTH CORE MODELS - Multi-tenant foundation
 // ============================================================================
 
 model Tenant {
-  id               String  @id @default(cuid())
+  id               String   @id @default(cuid())
   name             String
-  slug             String  @unique // for subdomains
+  slug             String   @unique // for subdomains
   plan             PlanType @default(FREE)
-  stripeCustomerId String? @unique
+  stripeCustomerId String?  @unique
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
+  // Link to Better Auth organization (1:1 relationship)
+  authOrganization AuthOrganization?
+
   // Relations
-  users         User[]
-  dashboards    Dashboard[]
-  integrations  Integration[]
-  metrics       Metric[]
-  reports       Report[]
-  workflows     Workflow[]
-  customApis    CustomApi[]
-  brandAssets   BrandAsset[]
-  aiTokenUsage  AiTokenUsage[]
+  users        User[]
+  dashboards   Dashboard[]
+  integrations Integration[]
+  metrics      Metric[]
+  reports      Report[]
+  workflows    Workflow[]
+  customApis   CustomApi[]
+  brandAssets  BrandAsset[]
+  aiTokenUsage AiTokenUsage[]
 
   @@map("tenants")
 }
 
 model User {
-  id           String    @id @default(cuid())
+  id           String   @id @default(cuid())
   tenantId     String
   email        String
   name         String?
-  role         UserRole  @default(MEMBER)
+  role         UserRole @default(MEMBER)
   avatarUrl    String?
-  createdAt    DateTime  @default(now())
-  lastActiveAt DateTime  @default(now())
+  createdAt    DateTime @default(now())
+  lastActiveAt DateTime @default(now())
+
+  // Link to Better Auth user (1:1 relationship)
+  authUserId String?   @unique
+  authUser   AuthUser? @relation(fields: [authUserId], references: [id], onDelete: SetNull)
 
   // Relations
   tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -55,8 +211,21 @@ model User {
   comments   Comment[]
   auditLogs  AuditLog[]
 
+  emailVerified    Boolean      @default(false)
+  image            String?
+  updatedAt        DateTime     @default(now()) @updatedAt
+  twoFactorEnabled Boolean?     @default(false)
+  stripeCustomerId String?
+  sessions         Session[]
+  accounts         Account[]
+  members          Member[]
+  invitations      Invitation[]
+  twofactors       TwoFactor[]
+  passkeys         Passkey[]
+
   @@unique([tenantId, email])
   @@index([tenantId])
+  @@index([authUserId])
   @@map("users")
 }
 
@@ -66,7 +235,7 @@ model Dashboard {
   userId     String
   name       String
   type       DashboardType
-  config     Json          // Widget positions, sizes, settings
+  config     Json // Widget positions, sizes, settings
   isPublic   Boolean       @default(false)
   shareToken String?       @unique
   createdAt  DateTime      @default(now())
@@ -85,9 +254,9 @@ model Dashboard {
 model Integration {
   id          String            @id @default(cuid())
   tenantId    String
-  type        IntegrationType   // STRIPE, QUICKBOOKS, etc
-  credentials Json              // OAuth tokens (encrypted)
-  config      Json              // Sync frequency, settings
+  type        IntegrationType // STRIPE, QUICKBOOKS, etc
+  credentials Json // OAuth tokens (encrypted)
+  config      Json // Sync frequency, settings
   status      IntegrationStatus
   lastSyncAt  DateTime?
   lastErrorAt DateTime?
@@ -105,15 +274,15 @@ model Integration {
 }
 
 model Metric {
-  id            String    @id @default(cuid())
+  id            String   @id @default(cuid())
   tenantId      String
   integrationId String?
   name          String
   value         Decimal
   unit          String?
   timestamp     DateTime
-  dimensions    Json      // Product, customer, category, etc
-  createdAt     DateTime  @default(now())
+  dimensions    Json // Product, customer, category, etc
+  createdAt     DateTime @default(now())
 
   // Relations
   tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -132,11 +301,11 @@ model CustomApi {
   method    String
   headers   Json?
   body      Json?
-  schedule  String?   // Cron expression
+  schedule  String? // Cron expression
   rateLimit Int       @default(60) // requests per minute
   status    ApiStatus
   lastRunAt DateTime?
-  metrics   Json      // Mapped fields to metrics
+  metrics   Json // Mapped fields to metrics
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -152,13 +321,13 @@ model CustomApi {
 // ============================================================================
 
 model Widget {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   dashboardId String
-  type        String    // chart, metric, table, etc
-  config      Json      // Widget-specific configuration
-  position    Json      // x, y, width, height
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  type        String // chart, metric, table, etc
+  config      Json // Widget-specific configuration
+  position    Json // x, y, width, height
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
   dashboard Dashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
@@ -168,15 +337,15 @@ model Widget {
 }
 
 model Report {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   tenantId    String
   name        String
   description String?
-  config      Json      // Report configuration
-  schedule    String?   // Cron expression for automated reports
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  config      Json // Report configuration
+  schedule    String? // Cron expression for automated reports
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -186,14 +355,14 @@ model Report {
 }
 
 model Workflow {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   tenantId    String
   name        String
   description String?
-  config      Json      // Workflow steps and conditions
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  config      Json // Workflow steps and conditions
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -203,14 +372,14 @@ model Workflow {
 }
 
 model BrandAsset {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   tenantId  String
   name      String
-  type      String    // logo, color, font, etc
-  url       String?   // File URL
-  config    Json      // Asset-specific configuration
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  type      String // logo, color, font, etc
+  url       String? // File URL
+  config    Json // Asset-specific configuration
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -222,10 +391,10 @@ model BrandAsset {
 model AiTokenUsage {
   id        String   @id @default(cuid())
   tenantId  String
-  model     String   // gpt-4, claude-3, etc
+  model     String // gpt-4, claude-3, etc
   tokens    Int
   cost      Decimal
-  purpose   String   // chat, analysis, generation, etc
+  purpose   String // chat, analysis, generation, etc
   createdAt DateTime @default(now())
 
   // Relations
@@ -236,13 +405,13 @@ model AiTokenUsage {
 }
 
 model Comment {
-  id        String   @id @default(cuid())
-  userId    String
-  content   String
-  entityId  String   // ID of the entity being commented on
-  entityType String  // dashboard, report, metric, etc
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  userId     String
+  content    String
+  entityId   String // ID of the entity being commented on
+  entityType String // dashboard, report, metric, etc
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -253,14 +422,14 @@ model Comment {
 }
 
 model AuditLog {
-  id        String   @id @default(cuid())
-  userId    String
-  action    String   // create, update, delete, view
-  entityId  String   // ID of the entity
-  entityType String  // user, dashboard, metric, etc
-  changes   Json?    // What changed
-  metadata  Json?    // Additional context
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  userId     String
+  action     String // create, update, delete, view
+  entityId   String // ID of the entity
+  entityType String // user, dashboard, metric, etc
+  changes    Json? // What changed
+  metadata   Json? // Additional context
+  createdAt  DateTime @default(now())
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -327,4 +496,134 @@ enum ApiStatus {
   PAUSED
   ERROR
   BLOCKED
+}
+
+model Session {
+  id                   String   @id
+  expiresAt            DateTime
+  token                String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  ipAddress            String?
+  userAgent            String?
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activeOrganizationId String?
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
+
+model Organization {
+  id          String       @id
+  name        String
+  slug        String
+  logo        String?
+  createdAt   DateTime
+  metadata    String?
+  members     Member[]
+  invitations Invitation[]
+
+  @@unique([slug])
+  @@map("organization")
+}
+
+model Member {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String
+  createdAt      DateTime
+
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  status         String
+  expiresAt      DateTime
+  inviterId      String
+  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@map("invitation")
+}
+
+model TwoFactor {
+  id          String @id
+  secret      String
+  backupCodes String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("twoFactor")
+}
+
+model Passkey {
+  id           String    @id
+  name         String?
+  publicKey    String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credentialID String
+  counter      Int
+  deviceType   String
+  backedUp     Boolean
+  transports   String?
+  createdAt    DateTime?
+  aaguid       String?
+
+  @@map("passkey")
+}
+
+model Subscription {
+  id                   String    @id
+  plan                 String
+  referenceId          String
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  status               String?
+  periodStart          DateTime?
+  periodEnd            DateTime?
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  cancelAtPeriodEnd    Boolean?  @default(false)
+  seats                Int?
+
+  @@map("subscription")
 }

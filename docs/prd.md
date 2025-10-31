@@ -423,6 +423,16 @@ P0: Tool Fragmentation Crisis
   - Custom Solinth-branded UI (glassmorphic)
   - Email/Password + Social OAuth + MFA
   - Role-based access control (OWNER, ADMIN, MEMBER, VIEWER)
+  - Stripe plugin for subscription management
+- Email: Resend for transactional emails
+  - Email verification and password reset
+  - Organization invitations with Solinth branding
+  - Welcome emails and notifications
+- Payments: Stripe for subscription billing
+  - 3-tier pricing (Free, Pro, Business)
+  - Automatic customer creation on signup
+  - Trial periods and subscription management
+  - Webhook handling for lifecycle events
 - Real-time: WebSockets/SSE for live updates
 - Storage: Cloudflare R2 for files
 - AI/ML: OpenRouter for model flexibility

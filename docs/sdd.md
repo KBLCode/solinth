@@ -35,6 +35,7 @@ Authentication & Authorization
   - TypeScript-native authentication framework
   - Prisma adapter for direct database integration
   - Organization plugin for multi-tenant support
+  - Stripe plugin for subscription management
   - Custom Solinth-branded UI (glassmorphic design)
   - Features:
     - Email/Password with verification
@@ -43,9 +44,39 @@ Authentication & Authorization
     - Role-based access control (OWNER, ADMIN, MEMBER, VIEWER)
     - Team invitations and management
     - Organization switching
+    - Subscription billing with Stripe
   - Rationale: 100% custom UI control, TypeScript-native, no vendor lock-in
   - PRD Reference: Lines 362-377 (Security Requirements)
   - SDD Reference: Lines 994-1033 (Authentication Architecture)
+
+Email Infrastructure
+
+- Resend (https://resend.com/)
+  - Transactional email API
+  - Integration with Better Auth email hooks
+  - Custom Solinth-branded email templates
+  - Features:
+    - Email verification
+    - Password reset emails
+    - Organization invitations
+    - Welcome emails
+  - Rationale: Simple API, reliable delivery, perfect for Better Auth integration
+  - PRD Reference: Lines 420-430 (Email Infrastructure)
+
+Payment Infrastructure
+
+- Stripe (https://stripe.com/)
+  - Subscription billing and management
+  - Integration via Better Auth Stripe plugin
+  - Features:
+    - Automatic customer creation on signup
+    - 3-tier pricing (Free, Pro, Business)
+    - Trial periods (14 days on Pro)
+    - Subscription lifecycle management
+    - Webhook handling with signature verification
+    - Organization-based billing
+  - Rationale: Industry standard, comprehensive API, native Better Auth integration
+  - PRD Reference: Lines 420-430 (Payment Infrastructure)
 
 Database
 
