@@ -1,45 +1,121 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Define public routes that don't require authentication
+// ============================================================================
+// ROUTE DEFINITIONS
+// ============================================================================
+
+// Public routes that don't require authentication
 const publicRoutes = [
   "/",
   "/login",
   "/signup",
   "/verify-email",
   "/reset-password",
-  "/api/auth",
+  "/pricing",
+  "/about",
+  "/contact",
+  "/terms",
+  "/privacy",
+  "/api/auth", // Better Auth API routes
+  "/api/stripe/webhook", // Stripe webhooks
 ];
 
-// Define auth routes that should redirect to dashboard if already authenticated
+// Auth routes that should redirect to dashboard if already authenticated
 const authRoutes = ["/login", "/signup"];
+
+// Protected routes that require authentication
+const protectedRoutes = [
+  "/dashboard",
+  "/dashboards",
+  "/business",
+  "/creative",
+  "/directors",
+  "/brand",
+  "/reporting",
+  "/support",
+  "/security",
+  "/custom",
+  "/integrations",
+  "/metrics",
+  "/reports",
+  "/workflows",
+  "/settings",
+  "/organizations",
+  "/billing",
+  "/team",
+  "/profile",
+  "/api/trpc", // tRPC API routes (will be added later)
+];
+
+// Admin-only routes (for future use)
+const adminRoutes = ["/admin"];
+
+// ============================================================================
+// MIDDLEWARE LOGIC
+// ============================================================================
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow public routes
+  // 1. Allow all public routes without authentication
   if (publicRoutes.some((route) => pathname.startsWith(route))) {
     return NextResponse.next();
   }
 
-  // Check for session cookie
+  // 2. Check for session cookie (Better Auth)
   const sessionCookie = request.cookies.get("better-auth.session_token");
   const isAuthenticated = !!sessionCookie;
 
-  // Redirect to login if not authenticated
-  if (!isAuthenticated) {
+  // 3. Redirect authenticated users away from auth pages
+  if (isAuthenticated && authRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  // 4. Protect all routes that require authentication
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+
+  if (isProtectedRoute && !isAuthenticated) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Redirect authenticated users away from auth pages
-  if (isAuthenticated && authRoutes.includes(pathname)) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  // 5. Admin routes protection (for future use)
+  const isAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
+
+  if (isAdminRoute && !isAuthenticated) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  // 6. Add security headers to all responses
+  const response = NextResponse.next();
+
+  // Security headers
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=()"
+  );
+
+  // CSP for production (commented out for development)
+  // response.headers.set(
+  //   "Content-Security-Policy",
+  //   "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.stripe.com;"
+  // );
+
+  return response;
 }
+
+// ============================================================================
+// MATCHER CONFIGURATION
+// ============================================================================
 
 export const config = {
   matcher: [
@@ -48,8 +124,9 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - public folder
+     * - public folder (images, fonts, etc.)
+     * - API routes that handle their own auth
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff|woff2|ttf|eot)$).*)",
   ],
 };
