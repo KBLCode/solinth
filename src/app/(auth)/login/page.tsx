@@ -1,13 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { ArrowRight, Eye, EyeOff, Lock, Mail, Fingerprint } from "lucide-react";
-import { useState } from "react";
+import { Logo } from "@/components/ui/logo";
+import { Eye, EyeOff, Fingerprint } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { authClient } from "@/lib/auth/auth-client";
 import { useRouter } from "next/navigation";
 
@@ -17,8 +23,8 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export default function LoginPage() {
-  const [isVisible, setIsVisible] = useState<boolean>(false);
+export default function SignIn() {
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -26,7 +32,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
+  const togglePasswordVisibility = () => setIsPasswordVisible((prev) => !prev);
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,12 +40,17 @@ export default function LoginPage() {
     setError("");
 
     try {
-      await authClient.signIn.email({
+      const result = await authClient.signIn.email({
         email,
         password,
         rememberMe,
       });
-      router.push("/dashboard");
+
+      if (result.error) {
+        setError(result.error.message || "Invalid email or password");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err) {
       setError("Invalid email or password");
       console.error("Sign in error:", err);
@@ -50,6 +61,7 @@ export default function LoginPage() {
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
+    setError("");
     try {
       await authClient.signIn.social({
         provider: "google",
@@ -66,169 +78,180 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
     try {
-      await authClient.passkey.signIn();
-      router.push("/dashboard");
+      const result = await authClient.passkey.signIn();
+
+      if (result.error) {
+        setError(result.error.message || "Failed to sign in with passkey");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err) {
-      setError("Failed to sign in with passkey");
+      setError(
+        "Failed to sign in with passkey. Make sure you have a passkey registered."
+      );
       console.error("Passkey sign in error:", err);
+    } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="glass-card mx-auto w-full max-w-md space-y-6 rounded-2xl p-8">
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-semibold text-dusk-slate dark:text-solar-white">
-          Welcome back
-        </h1>
-        <p className="text-dusk-slate/60 dark:text-sky-mist/60">
-          Sign in to access your dashboard, settings and projects.
-        </p>
-      </div>
-
-      {error && (
-        <div className="bg-destructive/10 text-destructive rounded-lg p-3 text-sm">
-          {error}
-        </div>
-      )}
-
-      <div className="space-y-5">
-        <div className="grid grid-cols-2 gap-3">
-          <Button
-            variant="outline"
-            className="w-full justify-center gap-2"
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-          >
-            <GoogleIcon className="h-4 w-4" />
-            Google
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full justify-center gap-2"
-            onClick={handlePasskeySignIn}
-            disabled={isLoading}
-          >
-            <Fingerprint className="h-4 w-4" />
-            Passkey
-          </Button>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Separator className="flex-1" />
-          <span className="text-sm text-dusk-slate/60 dark:text-sky-mist/60">
-            or sign in with email
-          </span>
-          <Separator className="flex-1" />
-        </div>
-
-        <form onSubmit={handleEmailSignIn} className="space-y-6">
+    <div className="flex min-h-screen items-center justify-center">
+      <Card className="mx-4 w-full max-w-md pb-0">
+        <CardHeader className="mb-2 mt-4 space-y-1 text-center">
+          <div className="flex justify-center">
+            <Logo size={48} showText={false} />
+          </div>
           <div>
-            <Label
-              htmlFor="email"
-              className="text-dusk-slate dark:text-solar-white"
+            <h2 className="text-2xl font-semibold text-dusk-slate dark:text-solar-white">
+              Sign in to Solinth
+            </h2>
+            <p className="text-sm text-dusk-slate/60 dark:text-sky-mist/60">
+              Welcome back! Please enter your details.
+            </p>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          {error && (
+            <div className="bg-destructive/10 text-destructive rounded-lg p-3 text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              variant="outline"
+              className="w-full"
+              type="button"
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
             >
-              Email
-            </Label>
-            <div className="relative mt-2.5">
+              <GoogleIcon className="mr-2 h-4 w-4" />
+              Google
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              type="button"
+              onClick={handlePasskeySignIn}
+              disabled={isLoading}
+            >
+              <Fingerprint className="mr-2 h-4 w-4" />
+              Passkey
+            </Button>
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-dusk-slate/10 dark:border-sky-mist/10" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-solar-white px-2 text-dusk-slate/60 dark:bg-eclipse-black dark:text-sky-mist/60">
+                Or continue with email
+              </span>
+            </div>
+          </div>
+
+          <form onSubmit={handleEmailSignIn} className="space-y-4">
+            <div className="space-y-2">
+              <Label
+                htmlFor="email"
+                className="text-dusk-slate dark:text-solar-white"
+              >
+                Email address
+              </Label>
               <Input
                 id="email"
-                className="peer ps-9"
-                placeholder="you@company.com"
                 type="email"
+                placeholder="you@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
               />
-              <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-dusk-slate/60 peer-disabled:opacity-50 dark:text-sky-mist/60">
-                <Mail size={16} aria-hidden="true" />
+            </div>
+
+            <div className="space-y-0">
+              <div className="mb-2 flex items-center justify-between">
+                <Label
+                  htmlFor="password"
+                  className="text-dusk-slate dark:text-solar-white"
+                >
+                  Password
+                </Label>
+                <Link
+                  href="/reset-password"
+                  className="text-sm text-radiant-amber hover:underline"
+                >
+                  Reset password
+                </Link>
+              </div>
+              <div className="relative">
+                <Input
+                  id="password"
+                  className="pe-9"
+                  placeholder="Enter your password"
+                  type={isPasswordVisible ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isLoading}
+                />
+                <button
+                  className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-dusk-slate/60 outline-none transition-[color,box-shadow] hover:text-dusk-slate focus:z-10 focus-visible:ring-[3px] focus-visible:ring-radiant-amber/20 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-sky-mist/60 dark:hover:text-solar-white"
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  aria-label={
+                    isPasswordVisible ? "Hide password" : "Show password"
+                  }
+                  aria-pressed={isPasswordVisible}
+                  aria-controls="password"
+                  disabled={isLoading}
+                >
+                  {isPasswordVisible ? (
+                    <EyeOff size={16} aria-hidden="true" />
+                  ) : (
+                    <Eye size={16} aria-hidden="true" />
+                  )}
+                </button>
               </div>
             </div>
-          </div>
 
-          <div>
-            <div className="flex items-center justify-between">
-              <Label
-                htmlFor="password"
-                className="text-dusk-slate dark:text-solar-white"
-              >
-                Password
-              </Label>
-              <Link
-                href="/reset-password"
-                className="text-sm text-dusk-slate hover:text-dusk-slate/80 dark:text-solar-white dark:hover:text-solar-white/80"
-              >
-                Forgot Password?
-              </Link>
-            </div>
-            <div className="relative mt-2.5">
-              <Input
-                id="password"
-                className="pe-9 ps-9"
-                placeholder="Enter your password"
-                type={isVisible ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="remember"
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
                 disabled={isLoading}
               />
-              <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-dusk-slate/60 peer-disabled:opacity-50 dark:text-sky-mist/60">
-                <Lock size={16} aria-hidden="true" />
-              </div>
-              <button
-                className="focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-dusk-slate/60 outline-none transition-[color,box-shadow] hover:text-dusk-slate focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-sky-mist/60 dark:hover:text-solar-white"
-                type="button"
-                onClick={toggleVisibility}
-                aria-label={isVisible ? "Hide password" : "Show password"}
-                aria-pressed={isVisible}
-                aria-controls="password"
-                disabled={isLoading}
+              <Label
+                htmlFor="remember"
+                className="text-sm font-normal text-dusk-slate dark:text-solar-white"
               >
-                {isVisible ? (
-                  <EyeOff size={16} aria-hidden="true" />
-                ) : (
-                  <Eye size={16} aria-hidden="true" />
-                )}
-              </button>
+                Remember me
+              </Label>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2 pt-1">
-            <Checkbox
-              id="remember-me"
-              checked={rememberMe}
-              onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+            <Button
+              className="w-full bg-radiant-amber text-solar-white hover:bg-radiant-amber/90"
+              type="submit"
               disabled={isLoading}
-            />
-            <Label
-              htmlFor="remember-me"
-              className="text-dusk-slate dark:text-solar-white"
             >
-              Remember for 30 days
-            </Label>
-          </div>
+              {isLoading ? "Signing in..." : "Sign In"}
+            </Button>
+          </form>
+        </CardContent>
 
-          <Button
-            type="submit"
-            className="w-full bg-radiant-amber text-solar-white hover:bg-radiant-amber/90"
-            disabled={isLoading}
-          >
-            {isLoading ? "Signing in..." : "Sign in"}
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </form>
-
-        <div className="text-center text-sm text-dusk-slate/60 dark:text-sky-mist/60">
-          No account?{" "}
-          <Link
-            href="/signup"
-            className="font-medium text-dusk-slate hover:underline dark:text-solar-white"
-          >
-            Create an account
-          </Link>
-        </div>
-      </div>
+        <CardFooter className="flex justify-center border-t border-dusk-slate/10 !py-4 dark:border-sky-mist/10">
+          <p className="text-center text-sm text-dusk-slate/60 dark:text-sky-mist/60">
+            New to Solinth?{" "}
+            <Link href="/signup" className="text-radiant-amber hover:underline">
+              Sign up
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
