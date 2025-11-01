@@ -146,17 +146,6 @@ export function Header() {
 
   return (
     <>
-      <style>{`
-        .glass-navbar-custom {
-          background: linear-gradient(-75deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05)) !important;
-          box-shadow: inset 0 0.125em 0.125em rgba(255, 168, 69, 0.05), inset 0 -0.125em 0.125em rgba(0, 0, 0, 0.1), 0 0.25em 0.125em -0.125em rgba(255, 168, 69, 0.2), 0 0 0.1em 0.25em inset rgba(255, 255, 255, 0.2) !important;
-          backdrop-filter: blur(20px) !important;
-          -webkit-backdrop-filter: blur(20px) !important;
-        }
-        .dark .glass-navbar-custom {
-          background: linear-gradient(-75deg, rgba(28, 31, 36, 0.05), rgba(28, 31, 36, 0.2), rgba(28, 31, 36, 0.05)) !important;
-        }
-      `}</style>
       <div className="fixed left-0 right-0 top-0 z-[100] py-3 transition-all duration-300">
         <motion.nav
           initial={{ y: -100, opacity: 0 }}
