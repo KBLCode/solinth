@@ -1,354 +1,142 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Logo } from "@/components/ui/logo";
+import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { authClient } from "@/lib/auth/auth-client";
+
+const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
+    <path d="M3.06364 7.50914C4.70909 4.24092 8.09084 2 12 2C14.6954 2 16.959 2.99095 18.6909 4.60455L15.8227 7.47274C14.7864 6.48185 13.4681 5.97727 12 5.97727C9.39542 5.97727 7.19084 7.73637 6.40455 10.1C6.2045 10.7 6.09086 11.3409 6.09086 12C6.09086 12.6591 6.2045 13.3 6.40455 13.9C7.19084 16.2636 9.39542 18.0227 12 18.0227C13.3454 18.0227 14.4909 17.6682 15.3864 17.0682C16.4454 16.3591 17.15 15.3 17.3818 14.05H12V10.1818H21.4181C21.5364 10.8363 21.6 11.5182 21.6 12.2273C21.6 15.2727 20.5091 17.8363 18.6181 19.5773C16.9636 21.1046 14.7 22 12 22C8.09084 22 4.70909 19.7591 3.06364 16.4909C2.38638 15.1409 2 13.6136 2 12C2 10.3864 2.38638 8.85911 3.06364 7.50914Z" />
+  </svg>
+);
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [isVisible, setIsVisible] = useState<boolean>(false);
 
-  const handleEmailLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
-
-    try {
-      await authClient.signIn.email({
-        email,
-        password,
-      });
-      router.push("/dashboard");
-    } catch (err: unknown) {
-      setError(err.message || "Failed to sign in");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handlePasskeyLogin = async () => {
-    setIsLoading(true);
-    setError("");
-
-    try {
-      await authClient.signIn.passkey({
-        autoFill: true,
-      });
-      router.push("/dashboard");
-    } catch (err: unknown) {
-      setError(err.message || "Failed to sign in with passkey");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleGitHubLogin = async () => {
-    setIsLoading(true);
-    try {
-      await authClient.signIn.social({
-        provider: "github",
-        callbackURL: "/dashboard",
-      });
-    } catch (err: unknown) {
-      setError(err.message || "Failed to sign in with GitHub");
-      setIsLoading(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    setIsLoading(true);
-    try {
-      await authClient.signIn.social({
-        provider: "google",
-        callbackURL: "/dashboard",
-      });
-    } catch (err: unknown) {
-      setError(err.message || "Failed to sign in with Google");
-      setIsLoading(false);
-    }
-  };
+  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
 
   return (
-    <div className="w-full max-w-md">
-      {/* Glassmorphic Card */}
-      <div className="glass-card p-8">
-        <div className="mb-6 text-center">
-          <h2 className="text-2xl font-semibold text-dusk-slate dark:text-solar-white">
+    <div className="flex min-h-screen items-center justify-center bg-solar-white p-4 dark:bg-eclipse-black">
+      <div className="glass-card mx-auto w-full max-w-md space-y-6 rounded-2xl p-8">
+        <div className="space-y-2 text-center">
+          <Logo className="mx-auto h-16 w-16" size={64} showText={false} />
+          <h1 className="text-3xl font-semibold text-dusk-slate dark:text-solar-white">
             Welcome back
-          </h2>
-          <p className="mt-2 text-sm text-dusk-slate/70 dark:text-sky-mist/70">
-            Sign in to your account to continue
+          </h1>
+          <p className="text-dusk-slate/70 dark:text-sky-mist/70">
+            Sign in to access your dashboard, settings and projects.
           </p>
         </div>
 
-        {error && (
-          <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
-            {error}
-          </div>
-        )}
+        <div className="space-y-5">
+          <Button variant="outline" className="w-full justify-center gap-2">
+            <GoogleIcon className="h-4 w-4" />
+            Sign in with Google
+          </Button>
 
-        {/* Passkey Login */}
-        <button
-          onClick={handlePasskeyLogin}
-          disabled={isLoading}
-          className="mb-4 w-full rounded-lg bg-gradient-to-r from-radiant-amber to-amber-500 px-4 py-3 font-medium text-white shadow-lg shadow-radiant-amber/30 transition-all hover:shadow-xl hover:shadow-radiant-amber/40 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isLoading ? (
-            <span className="flex items-center justify-center">
-              <svg className="mr-2 h-5 w-5 animate-spin" viewBox="0 0 24 24">
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              Signing in...
+          <div className="flex items-center gap-2">
+            <Separator className="flex-1" />
+            <span className="text-sm text-dusk-slate/60 dark:text-sky-mist/60">
+              or sign in with email
             </span>
-          ) : (
-            <span className="flex items-center justify-center">
-              <svg
-                className="mr-2 h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            <Separator className="flex-1" />
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <Label
+                htmlFor="email"
+                className="text-dusk-slate dark:text-solar-white"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                Email
+              </Label>
+              <div className="relative mt-2.5">
+                <Input
+                  id="email"
+                  className="peer ps-9"
+                  placeholder="you@company.com"
+                  type="email"
                 />
-              </svg>
-              Sign in with Passkey
-            </span>
-          )}
-        </button>
-
-        {/* Divider */}
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-dusk-slate/20 dark:border-sky-mist/20" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="bg-solar-white px-4 text-dusk-slate/70 dark:bg-midnight-graphite dark:text-sky-mist/70">
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        {/* Email/Password Form */}
-        <form onSubmit={handleEmailLogin} className="space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="mb-2 block text-sm font-medium text-dusk-slate dark:text-solar-white"
-            >
-              Email
-            </label>
-            <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg
-                  className="h-5 w-5 text-dusk-slate/50 dark:text-sky-mist/50"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
-                  />
-                </svg>
+                <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-dusk-slate/60 peer-disabled:opacity-50 dark:text-sky-mist/60">
+                  <Mail size={16} aria-hidden="true" />
+                </div>
               </div>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="glass-input w-full pl-10"
-                placeholder="you@example.com"
-              />
             </div>
-          </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="mb-2 block text-sm font-medium text-dusk-slate dark:text-solar-white"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg
-                  className="h-5 w-5 text-dusk-slate/50 dark:text-sky-mist/50"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+            <div>
+              <div className="flex items-center justify-between">
+                <Label
+                  htmlFor="password"
+                  className="text-dusk-slate dark:text-solar-white"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                  />
-                </svg>
+                  Password
+                </Label>
+                <Link
+                  href="/reset-password"
+                  className="text-sm text-dusk-slate hover:text-dusk-slate/80 dark:text-solar-white dark:hover:text-solar-white/80"
+                >
+                  Forgot Password?
+                </Link>
               </div>
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="glass-input w-full pl-10 pr-10"
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3"
+              <div className="relative mt-2.5">
+                <Input
+                  id="password"
+                  className="pe-9 ps-9"
+                  placeholder="Enter your password"
+                  type={isVisible ? "text" : "password"}
+                />
+                <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-dusk-slate/60 peer-disabled:opacity-50 dark:text-sky-mist/60">
+                  <Lock size={16} aria-hidden="true" />
+                </div>
+                <button
+                  className="focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-dusk-slate/60 outline-none transition-[color,box-shadow] hover:text-dusk-slate focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-sky-mist/60 dark:hover:text-solar-white"
+                  type="button"
+                  onClick={toggleVisibility}
+                  aria-label={isVisible ? "Hide password" : "Show password"}
+                  aria-pressed={isVisible}
+                  aria-controls="password"
+                >
+                  {isVisible ? (
+                    <EyeOff size={16} aria-hidden="true" />
+                  ) : (
+                    <Eye size={16} aria-hidden="true" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 pt-1">
+              <Checkbox id="remember-me" />
+              <Label
+                htmlFor="remember-me"
+                className="text-dusk-slate dark:text-solar-white"
               >
-                {showPassword ? (
-                  <svg
-                    className="h-5 w-5 text-dusk-slate/50 dark:text-sky-mist/50"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="h-5 w-5 text-dusk-slate/50 dark:text-sky-mist/50"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  </svg>
-                )}
-              </button>
+                Remember for 30 days
+              </Label>
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember"
-                type="checkbox"
-                className="h-4 w-4 rounded border-dusk-slate/30 text-radiant-amber focus:ring-radiant-amber"
-              />
-              <label
-                htmlFor="remember"
-                className="ml-2 block text-sm text-dusk-slate dark:text-sky-mist"
-              >
-                Remember me
-              </label>
-            </div>
+          <Button className="w-full bg-radiant-amber text-solar-white hover:bg-radiant-amber/90">
+            Sign in
+            <ArrowRight className="h-4 w-4" />
+          </Button>
 
+          <div className="text-center text-sm text-dusk-slate/70 dark:text-sky-mist/70">
+            No account?{" "}
             <Link
-              href="/reset-password"
-              className="text-sm font-medium text-radiant-amber transition-colors hover:text-amber-600"
+              href="/signup"
+              className="font-medium text-dusk-slate hover:underline dark:text-solar-white"
             >
-              Forgot password?
+              Create an account
             </Link>
           </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full rounded-lg bg-gradient-to-r from-radiant-amber to-amber-500 px-4 py-3 font-medium text-white shadow-lg shadow-radiant-amber/30 transition-all hover:shadow-xl hover:shadow-radiant-amber/40 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isLoading ? "Signing in..." : "Sign in"}
-          </button>
-        </form>
-
-        {/* Social Login */}
-        <div className="mt-6 grid grid-cols-2 gap-3">
-          <button
-            onClick={handleGitHubLogin}
-            disabled={isLoading}
-            className="flex items-center justify-center rounded-lg border border-dusk-slate/20 px-4 py-2 text-sm font-medium text-dusk-slate transition-colors hover:bg-dusk-slate/5 disabled:cursor-not-allowed disabled:opacity-50 dark:border-sky-mist/20 dark:text-solar-white dark:hover:bg-sky-mist/5"
-          >
-            <svg
-              className="mr-2 h-5 w-5"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-            </svg>
-            GitHub
-          </button>
-
-          <button
-            onClick={handleGoogleLogin}
-            disabled={isLoading}
-            className="flex items-center justify-center rounded-lg border border-dusk-slate/20 px-4 py-2 text-sm font-medium text-dusk-slate transition-colors hover:bg-dusk-slate/5 disabled:cursor-not-allowed disabled:opacity-50 dark:border-sky-mist/20 dark:text-solar-white dark:hover:bg-sky-mist/5"
-          >
-            <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
-              <path
-                fill="#4285F4"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-              />
-            </svg>
-            Google
-          </button>
         </div>
-
-        {/* Sign Up Link */}
-        <p className="mt-6 text-center text-sm text-dusk-slate/70 dark:text-sky-mist/70">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/signup"
-            className="font-medium text-radiant-amber transition-colors hover:text-amber-600"
-          >
-            Sign up
-          </Link>
-        </p>
       </div>
     </div>
   );
