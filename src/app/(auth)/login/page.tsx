@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Lock, Mail, Fingerprint } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth/auth-client";
@@ -62,6 +62,19 @@ export default function LoginPage() {
     }
   };
 
+  const handlePasskeySignIn = async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      await authClient.passkey.signIn();
+      router.push("/dashboard");
+    } catch (err) {
+      setError("Failed to sign in with passkey");
+      console.error("Passkey sign in error:", err);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="glass-card mx-auto w-full max-w-md space-y-6 rounded-2xl p-8">
       <div className="space-y-2 text-center">
@@ -80,15 +93,26 @@ export default function LoginPage() {
       )}
 
       <div className="space-y-5">
-        <Button
-          variant="outline"
-          className="w-full justify-center gap-2"
-          onClick={handleGoogleSignIn}
-          disabled={isLoading}
-        >
-          <GoogleIcon className="h-4 w-4" />
-          Sign in with Google
-        </Button>
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            variant="outline"
+            className="w-full justify-center gap-2"
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+          >
+            <GoogleIcon className="h-4 w-4" />
+            Google
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full justify-center gap-2"
+            onClick={handlePasskeySignIn}
+            disabled={isLoading}
+          >
+            <Fingerprint className="h-4 w-4" />
+            Passkey
+          </Button>
+        </div>
 
         <div className="flex items-center gap-2">
           <Separator className="flex-1" />
