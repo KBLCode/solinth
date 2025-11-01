@@ -12,8 +12,8 @@ export default function AboutPage() {
             About Solinth
           </h1>
           <p className="text-xl text-dusk-slate/70 dark:text-sky-mist/70">
-            Building the "Adobe Creative Cloud of business management" -
-            professional, comprehensive, and scalable.
+            Building the &ldquo;Adobe Creative Cloud of business
+            management&rdquo; - professional, comprehensive, and scalable.
           </p>
         </div>
       </main>

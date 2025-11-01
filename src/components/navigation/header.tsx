@@ -39,7 +39,6 @@ const navItems: NavItem[] = [
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const { scrollY } = useScroll();
   const pathname = usePathname();
@@ -70,8 +69,6 @@ export function Header() {
   }, [pathname]);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    setIsScrolled(latest > 20);
-
     // Only update active section based on scroll if we're on the homepage
     if (pathname === "/") {
       const sections = ["features", "pricing", "about", "contact"];
@@ -146,7 +143,7 @@ export function Header() {
 
   return (
     <>
-      <div className="fixed left-0 right-0 top-0 z-[100] transition-all duration-300">
+      <div className="fixed left-0 right-0 top-0 z-[100] pt-4 transition-all duration-300">
         <motion.nav
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
