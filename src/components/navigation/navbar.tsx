@@ -38,10 +38,24 @@ const navItems: NavItem[] = [
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("Features");
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { scrollY } = useScroll();
   const pathname = usePathname();
+
+  // Set mounted state to avoid hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+    // Set initial active section based on pathname
+    if (pathname === "/pricing") {
+      setActiveSection("Pricing");
+    } else if (pathname === "/docs") {
+      setActiveSection("Docs");
+    } else {
+      setActiveSection("Features");
+    }
+  }, [pathname]);
 
   // Update active section when pathname changes
   useEffect(() => {
@@ -172,12 +186,12 @@ export function Navbar() {
                         handleNavClick(item.label, item.href, e);
                       }}
                       className={`relative inline-block rounded-full px-6 py-2 text-sm font-medium transition-all duration-300 ${
-                        activeSection === item.label
+                        isMounted && activeSection === item.label
                           ? "text-dusk-slate dark:text-solar-white"
                           : "text-dusk-slate/60 hover:text-dusk-slate dark:text-sky-mist/60 dark:hover:text-solar-white"
                       }`}
                     >
-                      {activeSection === item.label && (
+                      {isMounted && activeSection === item.label && (
                         <motion.div
                           layoutId="activeNav"
                           className="absolute inset-0 rounded-full"
