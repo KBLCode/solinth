@@ -211,7 +211,7 @@ export function Header() {
                 ))}
               </div>
 
-              <div className="hidden md:block">
+              <div className="hidden items-center gap-3 md:flex">
                 <Link href="/login">
                   <div className="glass-button-wrap">
                     <motion.button
@@ -220,6 +220,18 @@ export function Header() {
                       className="glass-button rounded-full px-6 py-2 text-sm font-semibold transition-all duration-300"
                     >
                       <span className="glass-button-text">Sign In</span>
+                    </motion.button>
+                    <div className="glass-button-shadow rounded-full"></div>
+                  </div>
+                </Link>
+                <Link href="/signup">
+                  <div className="glass-button-wrap">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="glass-button rounded-full px-6 py-2 text-sm font-semibold transition-all duration-300"
+                    >
+                      <span className="glass-button-text">Sign Up</span>
                     </motion.button>
                     <div className="glass-button-shadow rounded-full"></div>
                   </div>
@@ -326,8 +338,18 @@ export function Header() {
                   </div>
                 </div>
 
-                <div className="border-t border-black/10 p-6">
+                <div className="space-y-3 border-t border-black/10 p-6">
                   <Link href="/login">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full rounded-full px-6 py-4 text-base font-semibold text-black transition-all duration-300 hover:bg-black/5"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Sign In
+                    </motion.button>
+                  </Link>
+                  <Link href="/signup">
                     <div className="glass-button-wrap w-full">
                       <motion.button
                         whileHover={{ scale: 1.02 }}
@@ -335,7 +357,7 @@ export function Header() {
                         className="glass-button w-full rounded-full px-6 py-4 text-base font-semibold"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <span className="glass-button-text">Sign In</span>
+                        <span className="glass-button-text">Sign Up</span>
                       </motion.button>
                       <div className="glass-button-shadow rounded-full"></div>
                     </div>

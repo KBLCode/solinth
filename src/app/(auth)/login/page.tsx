@@ -15,6 +15,7 @@ import { AnimatePresence, motion, useInView, Variants } from "framer-motion";
 import { authClient } from "@/lib/auth/auth-client";
 import { useRouter } from "next/navigation";
 import { ShaderBackground } from "@/components/ui/shader-background";
+import Link from "next/link";
 
 // --- GLASS BUTTON COMPONENT ---
 const GlassButton = React.forwardRef<
@@ -236,7 +237,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex min-h-screen w-screen flex-col bg-solar-white dark:bg-eclipse-black">
+    <>
       <style>{`
         @property --angle-1 { syntax: "<angle>"; inherits: false; initial-value: -75deg; }
         @property --angle-2 { syntax: "<angle>"; inherits: false; initial-value: -45deg; }
@@ -256,246 +257,249 @@ export default function SignIn() {
         .glass-input-wrap:focus-within .glass-input { backdrop-filter: blur(0.01em); box-shadow: inset 0 0.125em 0.125em rgba(255, 168, 69, 0.05), inset 0 -0.125em 0.125em rgba(0, 0, 0, 0.1), 0 0.15em 0.05em -0.1em rgba(255, 168, 69, 0.25), 0 0 0.05em 0.1em inset rgba(255, 255, 255, 0.3), 0 0 0 0 rgba(255, 255, 255, 0); }
       `}</style>
 
-      <div
-        className={cn(
-          "flex h-full w-full flex-1 items-center justify-center",
-          "relative overflow-hidden"
-        )}
+      <div className="absolute inset-0 z-0">
+        <ShaderBackground />
+      </div>
+
+      <fieldset
+        disabled={isLoading}
+        className="relative z-10 mx-auto flex w-full max-w-[400px] flex-col items-center gap-8 p-4 md:max-w-[500px] lg:max-w-[600px]"
       >
-        <div className="absolute inset-0 z-0">
-          <ShaderBackground />
-        </div>
+        {error && (
+          <div className="bg-destructive/10 text-destructive w-full rounded-lg p-3 text-center text-sm md:p-4 md:text-base">
+            {error}
+          </div>
+        )}
 
-        <fieldset
-          disabled={isLoading}
-          className="relative z-10 mx-auto flex w-full max-w-[400px] flex-col items-center gap-8 p-4 md:max-w-[500px] lg:max-w-[600px]"
-        >
-          {error && (
-            <div className="bg-destructive/10 text-destructive w-full rounded-lg p-3 text-center text-sm md:p-4 md:text-base">
-              {error}
-            </div>
+        <AnimatePresence mode="wait">
+          {authStep === "email" && (
+            <motion.div
+              key="email-content"
+              initial={{ y: 6, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="flex w-full flex-col items-center gap-4"
+            >
+              <BlurFade delay={0.25 * 1} className="w-full">
+                <div className="text-center">
+                  <h1 className="text-5xl font-light tracking-tight text-dusk-slate dark:text-solar-white sm:text-6xl md:text-7xl lg:text-8xl">
+                    Welcome back
+                  </h1>
+                </div>
+              </BlurFade>
+              <BlurFade delay={0.25 * 2}>
+                <p className="text-base font-medium text-dusk-slate/60 dark:text-sky-mist/60 md:text-lg">
+                  Continue with
+                </p>
+              </BlurFade>
+              <BlurFade delay={0.25 * 3}>
+                <div className="flex w-full items-center justify-center gap-4 md:gap-6">
+                  <GlassButton
+                    onClick={handleGoogleSignIn}
+                    contentClassName="flex items-center justify-center gap-2"
+                    className="md:scale-110"
+                  >
+                    <GoogleIcon />
+                    <span className="font-semibold">Google</span>
+                  </GlassButton>
+                  <GlassButton
+                    onClick={handlePasskeySignIn}
+                    contentClassName="flex items-center justify-center gap-2"
+                    className="md:scale-110"
+                  >
+                    <Fingerprint className="h-6 w-6" />
+                    <span className="font-semibold">Passkey</span>
+                  </GlassButton>
+                </div>
+              </BlurFade>
+              <BlurFade delay={0.25 * 4} className="w-full">
+                <div className="flex w-full items-center gap-2 py-2 md:gap-4 md:py-4">
+                  <hr className="w-full border-dusk-slate/10 dark:border-sky-mist/10" />
+                  <span className="text-sm font-semibold text-dusk-slate/60 dark:text-sky-mist/60 md:text-base">
+                    OR
+                  </span>
+                  <hr className="w-full border-dusk-slate/10 dark:border-sky-mist/10" />
+                </div>
+              </BlurFade>
+            </motion.div>
           )}
+          {authStep === "password" && (
+            <motion.div
+              key="password-title"
+              initial={{ y: 6, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="flex w-full flex-col items-center gap-4 text-center"
+            >
+              <BlurFade delay={0} className="w-full">
+                <div className="text-center">
+                  <h1 className="text-5xl font-light tracking-tight text-dusk-slate dark:text-solar-white sm:text-6xl md:text-7xl lg:text-8xl">
+                    Enter password
+                  </h1>
+                </div>
+              </BlurFade>
+              <BlurFade delay={0.25 * 1}>
+                <p className="text-base font-medium text-dusk-slate/60 dark:text-sky-mist/60 md:text-lg">
+                  Sign in to your account
+                </p>
+              </BlurFade>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-          <AnimatePresence mode="wait">
-            {authStep === "email" && (
+        <div className="w-full space-y-6 md:space-y-8">
+          <AnimatePresence>
+            {authStep !== "password" && (
               <motion.div
-                key="email-content"
-                initial={{ y: 6, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ opacity: 0 }}
+                key="email-field"
+                exit={{ opacity: 0, filter: "blur(4px)" }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="flex w-full flex-col items-center gap-4"
+                className="w-full"
               >
-                <BlurFade delay={0.25 * 1} className="w-full">
-                  <div className="text-center">
-                    <p className="font-serif text-5xl font-light tracking-tight text-dusk-slate dark:text-solar-white sm:text-6xl md:text-7xl lg:text-8xl">
-                      Welcome back
-                    </p>
+                <BlurFade
+                  delay={authStep === "email" ? 0.25 * 5 : 0}
+                  className="w-full"
+                >
+                  <div className="glass-input-wrap w-full">
+                    <div className="glass-input">
+                      <div
+                        className={cn(
+                          "relative z-10 flex flex-shrink-0 items-center justify-center overflow-hidden transition-all duration-300 ease-in-out",
+                          email.length > 20
+                            ? "w-0 px-0"
+                            : "w-10 pl-2 md:w-12 md:pl-3"
+                        )}
+                      >
+                        <Mail className="h-5 w-5 flex-shrink-0 text-dusk-slate/80 dark:text-solar-white/80 md:h-6 md:w-6" />
+                      </div>
+                      <input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        className={cn(
+                          "relative z-10 h-full w-0 flex-grow bg-transparent text-base text-dusk-slate transition-[padding-right] delay-300 duration-300 ease-in-out placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60 md:text-lg",
+                          isEmailValid ? "pr-2" : "pr-0"
+                        )}
+                      />
+                      <div
+                        className={cn(
+                          "relative z-10 flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out",
+                          isEmailValid ? "w-10 pr-1 md:w-12 md:pr-2" : "w-0"
+                        )}
+                      >
+                        <GlassButton
+                          type="button"
+                          onClick={handleProgressStep}
+                          size="icon"
+                          aria-label="Continue with email"
+                          contentClassName="text-dusk-slate/80 dark:text-solar-white/80"
+                        >
+                          <ArrowRight className="h-5 w-5 md:h-6 md:w-6" />
+                        </GlassButton>
+                      </div>
+                    </div>
                   </div>
-                </BlurFade>
-                <BlurFade delay={0.25 * 2}>
-                  <p className="text-base font-medium text-dusk-slate/60 dark:text-sky-mist/60 md:text-lg">
-                    Continue with
-                  </p>
-                </BlurFade>
-                <BlurFade delay={0.25 * 3}>
-                  <div className="flex w-full items-center justify-center gap-4 md:gap-6">
-                    <GlassButton
-                      onClick={handleGoogleSignIn}
-                      contentClassName="flex items-center justify-center gap-2"
-                      className="md:scale-110"
-                    >
-                      <GoogleIcon />
-                      <span className="font-semibold">Google</span>
-                    </GlassButton>
-                    <GlassButton
-                      onClick={handlePasskeySignIn}
-                      contentClassName="flex items-center justify-center gap-2"
-                      className="md:scale-110"
-                    >
-                      <Fingerprint className="h-6 w-6" />
-                      <span className="font-semibold">Passkey</span>
-                    </GlassButton>
-                  </div>
-                </BlurFade>
-                <BlurFade delay={0.25 * 4} className="w-full">
-                  <div className="flex w-full items-center gap-2 py-2 md:gap-4 md:py-4">
-                    <hr className="w-full border-dusk-slate/10 dark:border-sky-mist/10" />
-                    <span className="text-sm font-semibold text-dusk-slate/60 dark:text-sky-mist/60 md:text-base">
-                      OR
-                    </span>
-                    <hr className="w-full border-dusk-slate/10 dark:border-sky-mist/10" />
-                  </div>
-                </BlurFade>
-              </motion.div>
-            )}
-            {authStep === "password" && (
-              <motion.div
-                key="password-title"
-                initial={{ y: 6, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-                className="flex w-full flex-col items-center gap-4 text-center"
-              >
-                <BlurFade delay={0} className="w-full">
-                  <div className="text-center">
-                    <p className="font-serif text-5xl font-light tracking-tight text-dusk-slate dark:text-solar-white sm:text-6xl md:text-7xl lg:text-8xl">
-                      Enter password
-                    </p>
-                  </div>
-                </BlurFade>
-                <BlurFade delay={0.25 * 1}>
-                  <p className="text-base font-medium text-dusk-slate/60 dark:text-sky-mist/60 md:text-lg">
-                    Sign in to your account
-                  </p>
                 </BlurFade>
               </motion.div>
             )}
           </AnimatePresence>
 
-          <div className="w-full space-y-6 md:space-y-8">
-            <AnimatePresence>
-              {authStep !== "password" && (
-                <motion.div
-                  key="email-field"
-                  exit={{ opacity: 0, filter: "blur(4px)" }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="w-full"
-                >
-                  <BlurFade
-                    delay={authStep === "email" ? 0.25 * 5 : 0}
-                    className="w-full"
-                  >
-                    <div className="glass-input-wrap w-full">
-                      <div className="glass-input">
-                        <div
-                          className={cn(
-                            "relative z-10 flex flex-shrink-0 items-center justify-center overflow-hidden transition-all duration-300 ease-in-out",
-                            email.length > 20
-                              ? "w-0 px-0"
-                              : "w-10 pl-2 md:w-12 md:pl-3"
-                          )}
-                        >
-                          <Mail className="h-5 w-5 flex-shrink-0 text-dusk-slate/80 dark:text-solar-white/80 md:h-6 md:w-6" />
-                        </div>
-                        <input
-                          type="email"
-                          placeholder="Email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          onKeyDown={handleKeyDown}
-                          className={cn(
-                            "relative z-10 h-full w-0 flex-grow bg-transparent text-base text-dusk-slate transition-[padding-right] delay-300 duration-300 ease-in-out placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60 md:text-lg",
-                            isEmailValid ? "pr-2" : "pr-0"
-                          )}
-                        />
-                        <div
-                          className={cn(
-                            "relative z-10 flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out",
-                            isEmailValid ? "w-10 pr-1 md:w-12 md:pr-2" : "w-0"
-                          )}
-                        >
-                          <GlassButton
+          <AnimatePresence>
+            {authStep === "password" && (
+              <BlurFade key="password-field" className="w-full">
+                <div className="relative w-full">
+                  <AnimatePresence>
+                    {password.length > 0 && (
+                      <motion.div
+                        initial={{ y: -10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute -top-6 left-4 z-10"
+                      >
+                        <label className="text-xs font-semibold text-dusk-slate/60 dark:text-sky-mist/60">
+                          Password
+                        </label>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  <div className="glass-input-wrap w-full">
+                    <div className="glass-input">
+                      <div className="relative z-10 flex w-10 flex-shrink-0 items-center justify-center pl-2 md:w-12 md:pl-3">
+                        {isPasswordValid ? (
+                          <button
                             type="button"
-                            onClick={handleProgressStep}
-                            size="icon"
-                            aria-label="Continue with email"
-                            contentClassName="text-dusk-slate/80 dark:text-solar-white/80"
+                            aria-label="Toggle password visibility"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="rounded-full p-2 text-dusk-slate/80 transition-colors hover:text-dusk-slate dark:text-solar-white/80 dark:hover:text-solar-white"
                           >
-                            <ArrowRight className="h-5 w-5 md:h-6 md:w-6" />
-                          </GlassButton>
-                        </div>
+                            {showPassword ? (
+                              <EyeOff className="h-5 w-5 md:h-6 md:w-6" />
+                            ) : (
+                              <Eye className="h-5 w-5 md:h-6 md:w-6" />
+                            )}
+                          </button>
+                        ) : (
+                          <Lock className="h-5 w-5 flex-shrink-0 text-dusk-slate/80 dark:text-solar-white/80 md:h-6 md:w-6" />
+                        )}
                       </div>
-                    </div>
-                  </BlurFade>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <AnimatePresence>
-              {authStep === "password" && (
-                <BlurFade key="password-field" className="w-full">
-                  <div className="relative w-full">
-                    <AnimatePresence>
-                      {password.length > 0 && (
-                        <motion.div
-                          initial={{ y: -10, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          transition={{ duration: 0.3 }}
-                          className="absolute -top-6 left-4 z-10"
+                      <input
+                        ref={passwordInputRef}
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        className="relative z-10 h-full w-0 flex-grow bg-transparent text-base text-dusk-slate placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60 md:text-lg"
+                      />
+                      <div
+                        className={cn(
+                          "relative z-10 flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out",
+                          isPasswordValid ? "w-10 pr-1 md:w-12 md:pr-2" : "w-0"
+                        )}
+                      >
+                        <GlassButton
+                          type="button"
+                          onClick={handleProgressStep}
+                          size="icon"
+                          aria-label="Sign in"
+                          contentClassName="text-dusk-slate/80 dark:text-solar-white/80"
                         >
-                          <label className="text-xs font-semibold text-dusk-slate/60 dark:text-sky-mist/60">
-                            Password
-                          </label>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                    <div className="glass-input-wrap w-full">
-                      <div className="glass-input">
-                        <div className="relative z-10 flex w-10 flex-shrink-0 items-center justify-center pl-2 md:w-12 md:pl-3">
-                          {isPasswordValid ? (
-                            <button
-                              type="button"
-                              aria-label="Toggle password visibility"
-                              onClick={() => setShowPassword(!showPassword)}
-                              className="rounded-full p-2 text-dusk-slate/80 transition-colors hover:text-dusk-slate dark:text-solar-white/80 dark:hover:text-solar-white"
-                            >
-                              {showPassword ? (
-                                <EyeOff className="h-5 w-5 md:h-6 md:w-6" />
-                              ) : (
-                                <Eye className="h-5 w-5 md:h-6 md:w-6" />
-                              )}
-                            </button>
-                          ) : (
-                            <Lock className="h-5 w-5 flex-shrink-0 text-dusk-slate/80 dark:text-solar-white/80 md:h-6 md:w-6" />
-                          )}
-                        </div>
-                        <input
-                          ref={passwordInputRef}
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          onKeyDown={handleKeyDown}
-                          className="relative z-10 h-full w-0 flex-grow bg-transparent text-base text-dusk-slate placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60 md:text-lg"
-                        />
-                        <div
-                          className={cn(
-                            "relative z-10 flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out",
-                            isPasswordValid
-                              ? "w-10 pr-1 md:w-12 md:pr-2"
-                              : "w-0"
-                          )}
-                        >
-                          <GlassButton
-                            type="button"
-                            onClick={handleProgressStep}
-                            size="icon"
-                            aria-label="Sign in"
-                            contentClassName="text-dusk-slate/80 dark:text-solar-white/80"
-                          >
-                            <ArrowRight className="h-5 w-5 md:h-6 md:w-6" />
-                          </GlassButton>
-                        </div>
+                          <ArrowRight className="h-5 w-5 md:h-6 md:w-6" />
+                        </GlassButton>
                       </div>
                     </div>
                   </div>
-                  <BlurFade delay={0.2}>
-                    <button
-                      type="button"
-                      onClick={handleGoBack}
-                      className="mt-4 flex items-center gap-2 text-sm text-dusk-slate/70 transition-colors hover:text-dusk-slate dark:text-sky-mist/70 dark:hover:text-solar-white"
-                    >
-                      <ArrowLeft className="h-4 w-4" /> Go back
-                    </button>
-                  </BlurFade>
+                </div>
+                <BlurFade delay={0.2}>
+                  <button
+                    type="button"
+                    onClick={handleGoBack}
+                    className="mt-4 flex items-center gap-2 text-sm text-dusk-slate/70 transition-colors hover:text-dusk-slate dark:text-sky-mist/70 dark:hover:text-solar-white"
+                  >
+                    <ArrowLeft className="h-4 w-4" /> Go back
+                  </button>
                 </BlurFade>
-              )}
-            </AnimatePresence>
-          </div>
-        </fieldset>
-      </div>
-    </div>
+              </BlurFade>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <BlurFade delay={0.25 * 6} className="mt-8 w-full text-center">
+          <p className="text-base text-dusk-slate dark:text-solar-white md:text-lg">
+            No account?{" "}
+            <Link
+              href="/signup"
+              className="font-bold text-dusk-slate underline decoration-2 underline-offset-4 transition-all hover:opacity-70 dark:text-solar-white"
+            >
+              Sign up
+            </Link>
+          </p>
+        </BlurFade>
+      </fieldset>
+    </>
   );
 }
