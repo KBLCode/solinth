@@ -165,6 +165,8 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 }
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
+  // Stripe Invoice type doesn't include subscription in types, but it exists at runtime
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const subscriptionId = (invoice as any).subscription as string | null;
 
   if (!subscriptionId || typeof subscriptionId !== "string") {
@@ -186,6 +188,8 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 }
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
+  // Stripe Invoice type doesn't include subscription in types, but it exists at runtime
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const subscriptionId = (invoice as any).subscription as string | null;
 
   if (!subscriptionId || typeof subscriptionId !== "string") {
