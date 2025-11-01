@@ -2,6 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 168, 69, 0.3) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 168, 69, 0.3);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 168, 69, 0.5);
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background: rgba(255, 168, 69, 0.4);
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 168, 69, 0.6);
+}
+
 @layer base {
   :root {
     /* Solinth Light Mode Colors */
