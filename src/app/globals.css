@@ -151,15 +151,15 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-muted;
+    @apply bg-dusk-slate/5 dark:bg-sky-mist/5;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-primary/50;
+    @apply rounded-full bg-radiant-amber/50;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary/70;
+    @apply bg-radiant-amber/70;
   }
 
   /* Glass Input */
