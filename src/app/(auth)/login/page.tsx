@@ -12,7 +12,6 @@ import {
   Fingerprint,
 } from "lucide-react";
 import { AnimatePresence, motion, useInView, Variants } from "framer-motion";
-import { Logo } from "@/components/ui/logo";
 import { authClient } from "@/lib/auth/auth-client";
 import { useRouter } from "next/navigation";
 import { ShaderBackground } from "@/components/ui/shader-background";
