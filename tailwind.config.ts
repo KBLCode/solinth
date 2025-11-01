@@ -37,8 +37,11 @@ const config: Config = {
         border: "rgb(var(--border) / <alpha-value>)",
       },
       backgroundImage: {
-        "solar-gradient": "linear-gradient(135deg, #FFA845 0%, #FFD67C 100%)",
-        "solar-flare": "linear-gradient(135deg, #FFB347 0%, #FFCE73 100%)",
+        "solar-gradient": "linear-gradient(135deg, #FFA845 0%, #FFD67C 100%)", // Primary buttons
+        "solar-flare": "linear-gradient(135deg, #FFB347 0%, #FFCE73 100%)", // Button hovers
+      },
+      backgroundColor: {
+        "radiant-amber": "#FFA845", // Primary accent color
       },
       fontFamily: {
         sans: ["var(--font-sans)"],

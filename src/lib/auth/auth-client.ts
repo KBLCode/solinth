@@ -1,4 +1,4 @@
-import { createAuthClient } from "better-auth/client";
+import { createAuthClient } from "better-auth/react"; // Use React client for hooks
 import { organizationClient } from "better-auth/client/plugins";
 import { passkeyClient } from "better-auth/client/plugins";
 import { stripeClient } from "@better-auth/stripe/client";

@@ -541,7 +541,6 @@ variant = 'default',
 glow = false,
 }: GlassCardProps) {
 return (
-
 <div
 className={cn(
 'glass-card',
@@ -555,22 +554,66 @@ className
 );
 }
 
-// styles/glass.css
+// components/ui/button.tsx - Solinth Glassmorphic Buttons
+import { cn } from '@/lib/utils';
+import { cva, type VariantProps } from 'class-variance-authority';
+
+const buttonVariants = cva(
+"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-all duration-300",
+{
+variants: {
+variant: {
+// Primary glassmorphic button with Radiant Amber gradient
+default: "glass-button bg-solar-gradient text-solar-white shadow-lg hover:shadow-xl hover:scale-[1.02]",
+// Outline glassmorphic button
+outline: "glass-card border-2 border-radiant-amber/30 hover:bg-radiant-amber/10",
+// Secondary glassmorphic button
+secondary: "glass-card bg-midday-sand/50 dark:bg-midnight-graphite/50",
+// Ghost button
+ghost: "hover:bg-radiant-amber/10 hover:text-radiant-amber",
+},
+size: {
+default: "h-10 px-6 py-2",
+sm: "h-8 px-4 text-xs",
+lg: "h-12 px-8 text-base",
+icon: "h-10 w-10",
+},
+},
+defaultVariants: {
+variant: "default",
+size: "default",
+},
+}
+);
+
+export function Button({ variant, size, className, ...props }: ButtonProps) {
+return (
+<button
+className={cn(buttonVariants({ variant, size, className }))}
+{...props}
+/>
+);
+}
+
+// styles/glass.css - CORRECTED GLASSMORPHIC DESIGN
 .glass-card {
 @apply relative overflow-hidden rounded-xl;
 background: linear-gradient(
 135deg,
-rgba(255, 255, 255, 0.98) 0%,
-rgba(255, 255, 255, 0.92) 50%,
-rgba(255, 255, 255, 0.95) 100%
+rgba(255, 255, 255, 1) 0%, /_ Full opacity - enhanced frost _/
+rgba(255, 255, 255, 0.95) 50%,
+rgba(255, 255, 255, 0.98) 100%
 );
-backdrop-filter: blur(20px);
--webkit-backdrop-filter: blur(20px);
-border: 1.5px solid rgba(255, 165, 69, 0.15);
+backdrop-filter: blur(24px); /_ Increased frost _/
+-webkit-backdrop-filter: blur(24px);
+border: 2px solid rgba(0, 0, 0, 0.15); /_ Darker border _/
+border-top-color: rgba(255, 255, 255, 1); /_ Light from top-left _/
+border-left-color: rgba(255, 255, 255, 1); /_ Creates depth _/
 box-shadow:
-inset 0 1px 2px rgba(255, 255, 255, 1),
-0 8px 32px rgba(255, 165, 69, 0.12),
-0 2px 8px rgba(0, 0, 0, 0.08);
+inset 0 1px 2px rgba(255, 255, 255, 1), /_ Top highlight _/
+inset 0 -1px 2px rgba(0, 0, 0, 0.05), /_ Bottom shadow _/
+0 8px 32px rgba(255, 165, 69, 0.12), /_ Amber glow _/
+0 2px 8px rgba(0, 0, 0, 0.08); /_ Depth shadow _/
 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -578,23 +621,37 @@ transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 transform: translateY(-2px);
 box-shadow:
 inset 0 1px 2px rgba(255, 255, 255, 1),
-0 12px 40px rgba(255, 165, 69, 0.18),
+inset 0 -1px 2px rgba(0, 0, 0, 0.05),
+0 12px 40px rgba(255, 165, 69, 0.18), /_ Stronger amber glow _/
 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/_ Dark mode variant _/
+/_ Dark mode variant - CORRECTED _/
 .dark .glass-card {
 background: linear-gradient(
 135deg,
-rgba(28, 31, 36, 0.95) 0%,
-rgba(28, 31, 36, 0.88) 50%,
-rgba(28, 31, 36, 0.92) 100%
+rgba(28, 31, 36, 1) 0%, /_ Full opacity - enhanced frost _/
+rgba(28, 31, 36, 0.95) 50%,
+rgba(28, 31, 36, 0.98) 100%
 );
-border: 1.5px solid rgba(255, 165, 69, 0.25);
+backdrop-filter: blur(28px); /_ Even more frost in dark mode _/
+-webkit-backdrop-filter: blur(28px);
+border: 2px solid rgba(255, 165, 69, 0.2); /_ Amber border _/
+border-top-color: rgba(255, 255, 255, 0.15); /_ Light from top-left _/
+border-left-color: rgba(255, 255, 255, 0.15);
 box-shadow:
-inset 0 1px 0 rgba(255, 255, 255, 0.08),
-0 12px 40px rgba(255, 165, 69, 0.15),
-0 4px 12px rgba(0, 0, 0, 0.4);
+inset 0 1px 0 rgba(255, 255, 255, 0.1), /_ Top highlight _/
+inset 0 -1px 0 rgba(0, 0, 0, 0.3), /_ Bottom shadow _/
+0 12px 40px rgba(255, 165, 69, 0.15), /_ Amber glow _/
+0 4px 12px rgba(0, 0, 0, 0.4); /_ Depth shadow _/
+}
+
+.dark .glass-card:hover {
+box-shadow:
+inset 0 1px 0 rgba(255, 255, 255, 0.1),
+inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+0 16px 48px rgba(255, 165, 69, 0.2), /_ Stronger glow _/
+0 6px 16px rgba(0, 0, 0, 0.5);
 }
 Integration System
 OAuth Flow

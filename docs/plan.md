@@ -146,26 +146,56 @@ Actions:
 - [ ] No cross-tenant data leaks
 - [ ] Subdomain routing works
       Week 2: Design System & UI Foundation
-      Task 2.1: Solinth Design System
+      Task 2.1: Solinth Design System (CORRECTED GLASSMORPHIC)
       Priority: P0Estimated Time: 32 hoursPRD Reference: Lines 501-600 (Design Requirements)SDD Reference: Lines 650-750 (Glass Component System)
+      CRITICAL: Use CORRECTED glassmorphic specifications:
+      - Enhanced frost: blur(24px) light, blur(28px) dark
+      - Full opacity base: rgba(255,255,255,1) or rgba(28,31,36,1)
+      - Directional borders: 2px solid with top/left lighter
+      - Dual inset shadows: top highlight + bottom shadow
+      - Amber glow in all box-shadows
+
       Actions:
 
-1. Implement color tokens for light/dark mode
-2. Create glassmorphic base styles
-3. Build GlassCard component
-4. Set up theme switching
+1. Implement color tokens for light/dark mode (Solar White, Radiant Amber, etc.)
+2. Create CORRECTED glassmorphic base styles with enhanced frost
+3. Build GlassCard component with directional borders
+4. Set up theme switching with proper dark mode glass
 5. Create responsive grid system
    Files to Create:
 
-- /styles/globals.css → Design tokens
-- /styles/glass.css → Glassmorphic effects
-- /components/ui/glass-card.tsx → Base glass component
+- /styles/globals.css → Design tokens + CORRECTED glass styles
+- /components/ui/glass-card.tsx → Base glass component (enhanced frost)
 - /components/ui/theme-toggle.tsx → Light/dark switcher
 - /lib/theme/provider.tsx → Theme context
+
+  Glass Specifications to Implement:
+
+  Light Mode:
+  - background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.98) 100%)
+  - backdrop-filter: blur(24px)
+  - border: 2px solid rgba(0,0,0,0.15)
+  - border-top-color: rgba(255,255,255,1)
+  - border-left-color: rgba(255,255,255,1)
+  - box-shadow: inset 0 1px 2px rgba(255,255,255,1), inset 0 -1px 2px rgba(0,0,0,0.05), 0 8px 32px rgba(255,165,69,0.12), 0 2px 8px rgba(0,0,0,0.08)
+
+  Dark Mode:
+  - background: linear-gradient(135deg, rgba(28,31,36,1) 0%, rgba(28,31,36,0.95) 50%, rgba(28,31,36,0.98) 100%)
+  - backdrop-filter: blur(28px)
+  - border: 2px solid rgba(255,165,69,0.2)
+  - border-top-color: rgba(255,255,255,0.15)
+  - border-left-color: rgba(255,255,255,0.15)
+  - box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.3), 0 12px 40px rgba(255,165,69,0.15), 0 4px 12px rgba(0,0,0,0.4)
+
   Validation:
-- [ ] Glass effects render correctly
+
+- [ ] Glass effects use enhanced frost (24px/28px blur)
+- [ ] Directional borders create depth (top/left lighter)
+- [ ] Dual inset shadows present (top + bottom)
+- [ ] Amber glow visible in all shadows
+- [ ] Full opacity gradient base (no transparency at 0%)
 - [ ] Light/dark mode switching works
-- [ ] Colors match brand palette
+- [ ] Colors match brand palette exactly
 - [ ] Responsive on all devices
       Task 2.2: Core UI Components
       Priority: P0Estimated Time: 40 hoursPRD Reference: Lines 501-600 (UI/UX Requirements)SDD Reference: Lines 650-750 (Component Architecture)

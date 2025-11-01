@@ -265,46 +265,54 @@ P0: Tool Fragmentation Crisis
   Design Requirements
   Brand Identity
   Color Palette - Light Mode:
-- Primary: Solar White (#FFFFFF) - Clean base
-- Accent: Radiant Amber (#FFA845) - CTAs and highlights
-- Secondary: Midday Sand (#EADAC0) - Warm support
-- Text: Dusk Slate (#2E3440) - High contrast
-- Cool Accent: Sky Mist (#D8E3F0) - Balance warmth
-- Gradient: Solar Gradient (#FFA845 → #FFD67C) - Hero elements
+- **Solar White:** `#FFFFFF` - Clean base
+- **Radiant Amber:** `#FFA845` - CTAs and highlights (primary buttons)
+- **Midday Sand:** `#EADAC0` - Warm support (secondary buttons)
+- **Dusk Slate:** `#2E3440` - High contrast text
+- **Sky Mist:** `#D8E3F0` - Balance warmth
+- **Solar Gradient:** `linear-gradient(135deg, #FFA845 0%, #FFD67C 100%)` - Primary buttons
+
   Color Palette - Dark Mode:
-- Background: Eclipse Black (#0F1114) - Deep base
-- Surface: Midnight Graphite (#1C1F24) - Elevated panels
-- Text Primary: Solar White (#FFFFFF) - High contrast
-- Text Secondary: Sky Mist (#D8E3F0) - Muted elements
-- Accent: Radiant Amber (#FFA845) - Consistent brand accent
-- Support: Lunar Sand (#B7A98B) - Subtle contrast
-- Gradient: Solar Flare (#FFB347 → #FFCE73) - Glows and hovers
-  Glassmorphic Design System - Light Mode:
+
+- **Eclipse Black:** `#0F1114` - Deep base
+- **Midnight Graphite:** `#1C1F24` - Elevated panels (secondary buttons)
+- **Solar White:** `#FFFFFF` - High contrast text
+- **Sky Mist:** `#D8E3F0` - Muted elements
+- **Radiant Amber:** `#FFA845` - Consistent brand accent (primary buttons)
+- **Lunar Sand:** `#B7A98B` - Subtle contrast
+- **Solar Flare:** `linear-gradient(135deg, #FFB347 0%, #FFCE73 100%)` - Button hovers
+  Glassmorphic Design System - Light Mode (CORRECTED):
   background: linear-gradient(
   135deg,
-  rgba(255,255,255,0.98) 0%,
-  rgba(255,255,255,0.92) 50%,
-  rgba(255,255,255,0.95) 100%
+  rgba(255,255,255,1) 0%, /_ Full opacity - enhanced frost _/
+  rgba(255,255,255,0.95) 50%,
+  rgba(255,255,255,0.98) 100%
   );
-  backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(255,165,69,0.15); /_ Radiant Amber border _/
+  backdrop-filter: blur(24px); /_ Increased frost _/
+  border: 2px solid rgba(0,0,0,0.15); /_ Darker border _/
+  border-top-color: rgba(255,255,255,1); /_ Light from top-left _/
+  border-left-color: rgba(255,255,255,1); /_ Creates depth _/
   box-shadow:
-  inset 0 1px 2px rgba(255,255,255,1),
+  inset 0 1px 2px rgba(255,255,255,1), /_ Top highlight _/
+  inset 0 -1px 2px rgba(0,0,0,0.05), /_ Bottom shadow _/
   0 8px 32px rgba(255,165,69,0.12), /_ Amber glow _/
-  0 2px 8px rgba(0,0,0,0.08);
-  Glassmorphic Design System - Dark Mode:
+  0 2px 8px rgba(0,0,0,0.08); /_ Depth shadow _/
+  Glassmorphic Design System - Dark Mode (CORRECTED):
   background: linear-gradient(
   135deg,
-  rgba(28,31,36,0.95) 0%, /_ Midnight Graphite _/
-  rgba(28,31,36,0.88) 50%,
-  rgba(28,31,36,0.92) 100%
+  rgba(28,31,36,1) 0%, /_ Full opacity - enhanced frost _/
+  rgba(28,31,36,0.95) 50%,
+  rgba(28,31,36,0.98) 100%
   );
-  backdrop-filter: blur(24px);
-  border: 1.5px solid rgba(255,165,69,0.25); /_ Stronger Amber border in dark _/
+  backdrop-filter: blur(28px); /_ Even more frost in dark mode _/
+  border: 2px solid rgba(255,165,69,0.2); /_ Amber border _/
+  border-top-color: rgba(255,255,255,0.15); /_ Light from top-left _/
+  border-left-color: rgba(255,255,255,0.15);
   box-shadow:
-  inset 0 1px 0 rgba(255,255,255,0.08),
+  inset 0 1px 0 rgba(255,255,255,0.1), /_ Top highlight _/
+  inset 0 -1px 0 rgba(0,0,0,0.3), /_ Bottom shadow _/
   0 12px 40px rgba(255,165,69,0.15), /_ Amber glow _/
-  0 4px 12px rgba(0,0,0,0.4);
+  0 4px 12px rgba(0,0,0,0.4); /_ Depth shadow _/
   UI/UX Requirements
 - Responsive Design: Mobile, tablet, desktop optimized
 - Theme Support: Light and dark modes with system preference detection

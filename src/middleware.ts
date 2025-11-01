@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { auth } from "@/lib/auth/auth";
 
 // ============================================================================
 // ROUTE DEFINITIONS
@@ -45,6 +46,7 @@ const protectedRoutes = [
   "/billing",
   "/team",
   "/profile",
+  "/onboarding", // Tenant onboarding
   "/api/trpc", // tRPC API routes (will be added later)
 ];
 
@@ -66,6 +68,21 @@ export async function middleware(request: NextRequest) {
   // 2. Check for session cookie (Better Auth)
   const sessionCookie = request.cookies.get("better-auth.session_token");
   const isAuthenticated = !!sessionCookie;
+
+  // 2.5. Get session and tenant context for authenticated users
+  let activeOrganizationId: string | null = null;
+
+  if (isAuthenticated) {
+    try {
+      const session = await auth.api.getSession({
+        headers: request.headers,
+      });
+
+      activeOrganizationId = session?.session?.activeOrganizationId || null;
+    } catch (error) {
+      console.error("Error getting session in middleware:", error);
+    }
+  }
 
   // 3. Redirect authenticated users away from auth pages
   if (isAuthenticated && authRoutes.includes(pathname)) {
@@ -92,7 +109,22 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // 6. Add security headers to all responses
+  // 6. Check if user needs to select/create an organization
+  const requiresTenant = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+
+  if (
+    isAuthenticated &&
+    requiresTenant &&
+    !activeOrganizationId &&
+    pathname !== "/onboarding"
+  ) {
+    // Redirect to onboarding if no active organization
+    return NextResponse.redirect(new URL("/onboarding", request.url));
+  }
+
+  // 7. Add security headers and tenant context to all responses
   const response = NextResponse.next();
 
   // Security headers
@@ -103,6 +135,11 @@ export async function middleware(request: NextRequest) {
     "Permissions-Policy",
     "camera=(), microphone=(), geolocation=()"
   );
+
+  // Tenant context header (for server components)
+  if (activeOrganizationId) {
+    response.headers.set("x-tenant-id", activeOrganizationId);
+  }
 
   // CSP for production (commented out for development)
   // response.headers.set(
