@@ -150,7 +150,13 @@ export function Header() {
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
           className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8"
         >
-          <div className="glass-navbar-custom mx-2 rounded-full sm:mx-0">
+          <div
+            className="glass-navbar-custom mx-2 rounded-full sm:mx-0"
+            style={{
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+            }}
+          >
             <div className="flex items-center justify-between px-3 py-3 sm:px-6">
               <motion.div
                 className="flex items-center"

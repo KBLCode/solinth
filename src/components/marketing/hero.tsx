@@ -106,20 +106,7 @@ export function Hero() {
             transition={{ delay: 0.4, duration: 0.8 }}
             className="relative"
           >
-            <div
-              className="relative overflow-hidden rounded-2xl backdrop-blur-xl"
-              style={{
-                background:
-                  "linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.65) 50%, rgba(255, 255, 255, 0.75) 100%)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-                border: "1px solid rgba(0, 0, 0, 0.08)",
-                borderTopColor: "rgba(255, 255, 255, 0.9)",
-                borderLeftColor: "rgba(255, 255, 255, 0.8)",
-                boxShadow:
-                  "inset 0 1px 2px rgba(255, 255, 255, 0.8), inset 0 -1px 2px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.08), 0 0 30px rgba(255, 168, 69, 0.15)",
-              }}
-            >
+            <div className="glass-card relative overflow-hidden rounded-2xl">
               <div className="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-radiant-amber/5 to-sky-mist/10">
                 <div className="text-center">
                   <div className="glass-card mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl">
