@@ -37,10 +37,10 @@ const GlassButton = React.forwardRef<
     ref
   ) => {
     const sizeClasses = {
-      default: "px-6 py-3.5 text-base",
-      sm: "px-4 py-2 text-sm",
-      lg: "px-8 py-4 text-lg",
-      icon: "h-10 w-10 flex items-center justify-center",
+      default: "px-6 py-3.5 text-base md:px-8 md:py-4 md:text-lg",
+      sm: "px-4 py-2 text-sm md:px-6 md:py-3 md:text-base",
+      lg: "px-8 py-4 text-lg md:px-10 md:py-5 md:text-xl",
+      icon: "h-10 w-10 md:h-12 md:w-12 flex items-center justify-center",
     };
 
     const handleWrapperClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -281,10 +281,10 @@ export default function SignIn() {
 
         <fieldset
           disabled={isLoading}
-          className="relative z-10 mx-auto flex w-[280px] flex-col items-center gap-8 p-4"
+          className="relative z-10 mx-auto flex w-full max-w-[400px] flex-col items-center gap-8 p-4 md:max-w-[500px] lg:max-w-[600px]"
         >
           {error && (
-            <div className="bg-destructive/10 text-destructive w-full max-w-[300px] rounded-lg p-3 text-center text-sm">
+            <div className="bg-destructive/10 text-destructive w-full rounded-lg p-3 text-center text-sm md:p-4 md:text-base">
               {error}
             </div>
           )}
@@ -301,22 +301,22 @@ export default function SignIn() {
               >
                 <BlurFade delay={0.25 * 1} className="w-full">
                   <div className="text-center">
-                    <p className="whitespace-nowrap font-serif text-4xl font-light tracking-tight text-dusk-slate dark:text-solar-white sm:text-5xl md:text-6xl">
+                    <p className="font-serif text-5xl font-light tracking-tight text-dusk-slate dark:text-solar-white sm:text-6xl md:text-7xl lg:text-8xl">
                       Welcome back
                     </p>
                   </div>
                 </BlurFade>
                 <BlurFade delay={0.25 * 2}>
-                  <p className="text-sm font-medium text-dusk-slate/60 dark:text-sky-mist/60">
+                  <p className="text-base font-medium text-dusk-slate/60 dark:text-sky-mist/60 md:text-lg">
                     Continue with
                   </p>
                 </BlurFade>
                 <BlurFade delay={0.25 * 3}>
-                  <div className="flex w-full items-center justify-center gap-4">
+                  <div className="flex w-full items-center justify-center gap-4 md:gap-6">
                     <GlassButton
                       onClick={handleGoogleSignIn}
                       contentClassName="flex items-center justify-center gap-2"
-                      size="sm"
+                      className="md:scale-110"
                     >
                       <GoogleIcon />
                       <span className="font-semibold">Google</span>
@@ -324,17 +324,17 @@ export default function SignIn() {
                     <GlassButton
                       onClick={handlePasskeySignIn}
                       contentClassName="flex items-center justify-center gap-2"
-                      size="sm"
+                      className="md:scale-110"
                     >
                       <Fingerprint className="h-6 w-6" />
                       <span className="font-semibold">Passkey</span>
                     </GlassButton>
                   </div>
                 </BlurFade>
-                <BlurFade delay={0.25 * 4} className="w-[300px]">
-                  <div className="flex w-full items-center gap-2 py-2">
+                <BlurFade delay={0.25 * 4} className="w-full">
+                  <div className="flex w-full items-center gap-2 py-2 md:gap-4 md:py-4">
                     <hr className="w-full border-dusk-slate/10 dark:border-sky-mist/10" />
-                    <span className="text-xs font-semibold text-dusk-slate/60 dark:text-sky-mist/60">
+                    <span className="text-sm font-semibold text-dusk-slate/60 dark:text-sky-mist/60 md:text-base">
                       OR
                     </span>
                     <hr className="w-full border-dusk-slate/10 dark:border-sky-mist/10" />
@@ -353,13 +353,13 @@ export default function SignIn() {
               >
                 <BlurFade delay={0} className="w-full">
                   <div className="text-center">
-                    <p className="whitespace-nowrap font-serif text-4xl font-light tracking-tight text-dusk-slate dark:text-solar-white sm:text-5xl">
+                    <p className="font-serif text-5xl font-light tracking-tight text-dusk-slate dark:text-solar-white sm:text-6xl md:text-7xl lg:text-8xl">
                       Enter password
                     </p>
                   </div>
                 </BlurFade>
                 <BlurFade delay={0.25 * 1}>
-                  <p className="text-sm font-medium text-dusk-slate/60 dark:text-sky-mist/60">
+                  <p className="text-base font-medium text-dusk-slate/60 dark:text-sky-mist/60 md:text-lg">
                     Sign in to your account
                   </p>
                 </BlurFade>
@@ -367,7 +367,7 @@ export default function SignIn() {
             )}
           </AnimatePresence>
 
-          <div className="w-[300px] space-y-6">
+          <div className="w-full space-y-6 md:space-y-8">
             <AnimatePresence>
               {authStep !== "password" && (
                 <motion.div
@@ -385,10 +385,12 @@ export default function SignIn() {
                         <div
                           className={cn(
                             "relative z-10 flex flex-shrink-0 items-center justify-center overflow-hidden transition-all duration-300 ease-in-out",
-                            email.length > 20 ? "w-0 px-0" : "w-10 pl-2"
+                            email.length > 20
+                              ? "w-0 px-0"
+                              : "w-10 pl-2 md:w-12 md:pl-3"
                           )}
                         >
-                          <Mail className="h-5 w-5 flex-shrink-0 text-dusk-slate/80 dark:text-solar-white/80" />
+                          <Mail className="h-5 w-5 flex-shrink-0 text-dusk-slate/80 dark:text-solar-white/80 md:h-6 md:w-6" />
                         </div>
                         <input
                           type="email"
@@ -397,14 +399,14 @@ export default function SignIn() {
                           onChange={(e) => setEmail(e.target.value)}
                           onKeyDown={handleKeyDown}
                           className={cn(
-                            "relative z-10 h-full w-0 flex-grow bg-transparent text-dusk-slate transition-[padding-right] delay-300 duration-300 ease-in-out placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60",
+                            "relative z-10 h-full w-0 flex-grow bg-transparent text-base text-dusk-slate transition-[padding-right] delay-300 duration-300 ease-in-out placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60 md:text-lg",
                             isEmailValid ? "pr-2" : "pr-0"
                           )}
                         />
                         <div
                           className={cn(
                             "relative z-10 flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out",
-                            isEmailValid ? "w-10 pr-1" : "w-0"
+                            isEmailValid ? "w-10 pr-1 md:w-12 md:pr-2" : "w-0"
                           )}
                         >
                           <GlassButton
@@ -414,7 +416,7 @@ export default function SignIn() {
                             aria-label="Continue with email"
                             contentClassName="text-dusk-slate/80 dark:text-solar-white/80"
                           >
-                            <ArrowRight className="h-5 w-5" />
+                            <ArrowRight className="h-5 w-5 md:h-6 md:w-6" />
                           </GlassButton>
                         </div>
                       </div>
@@ -444,7 +446,7 @@ export default function SignIn() {
                     </AnimatePresence>
                     <div className="glass-input-wrap w-full">
                       <div className="glass-input">
-                        <div className="relative z-10 flex w-10 flex-shrink-0 items-center justify-center pl-2">
+                        <div className="relative z-10 flex w-10 flex-shrink-0 items-center justify-center pl-2 md:w-12 md:pl-3">
                           {isPasswordValid ? (
                             <button
                               type="button"
@@ -453,13 +455,13 @@ export default function SignIn() {
                               className="rounded-full p-2 text-dusk-slate/80 transition-colors hover:text-dusk-slate dark:text-solar-white/80 dark:hover:text-solar-white"
                             >
                               {showPassword ? (
-                                <EyeOff className="h-5 w-5" />
+                                <EyeOff className="h-5 w-5 md:h-6 md:w-6" />
                               ) : (
-                                <Eye className="h-5 w-5" />
+                                <Eye className="h-5 w-5 md:h-6 md:w-6" />
                               )}
                             </button>
                           ) : (
-                            <Lock className="h-5 w-5 flex-shrink-0 text-dusk-slate/80 dark:text-solar-white/80" />
+                            <Lock className="h-5 w-5 flex-shrink-0 text-dusk-slate/80 dark:text-solar-white/80 md:h-6 md:w-6" />
                           )}
                         </div>
                         <input
@@ -469,12 +471,14 @@ export default function SignIn() {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           onKeyDown={handleKeyDown}
-                          className="relative z-10 h-full w-0 flex-grow bg-transparent text-dusk-slate placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60"
+                          className="relative z-10 h-full w-0 flex-grow bg-transparent text-base text-dusk-slate placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60 md:text-lg"
                         />
                         <div
                           className={cn(
                             "relative z-10 flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out",
-                            isPasswordValid ? "w-10 pr-1" : "w-0"
+                            isPasswordValid
+                              ? "w-10 pr-1 md:w-12 md:pr-2"
+                              : "w-0"
                           )}
                         >
                           <GlassButton
@@ -484,7 +488,7 @@ export default function SignIn() {
                             aria-label="Sign in"
                             contentClassName="text-dusk-slate/80 dark:text-solar-white/80"
                           >
-                            <ArrowRight className="h-5 w-5" />
+                            <ArrowRight className="h-5 w-5 md:h-6 md:w-6" />
                           </GlassButton>
                         </div>
                       </div>

@@ -128,14 +128,14 @@ export default function OnboardingPage() {
                   Welcome to Solinth! 🎉
                 </h2>
                 <p className="mt-2 text-dusk-slate/70 dark:text-sky-mist/70">
-                  Let's set up your organization to get started with tracking
-                  your business metrics.
+                  Let&apos;s set up your organization to get started with
+                  tracking your business metrics.
                 </p>
               </div>
 
               <div className="glass-card space-y-4 bg-radiant-amber/5 p-6">
                 <h3 className="font-medium text-dusk-slate dark:text-solar-white">
-                  What you'll get:
+                  What you&apos;ll get:
                 </h3>
                 <ul className="space-y-2 text-sm text-dusk-slate/80 dark:text-sky-mist/80">
                   <li className="flex items-start gap-2">
