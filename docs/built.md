@@ -1,3 +1,148 @@
+## [2025-11-01] - Solinth - GLASS INPUTS + PASSKEY SIGN-IN
+
+### 🎯 Task Completed: Fixed Blue Inputs and Added Passkey Authentication
+
+**Suite:** Foundation | Authentication UI
+**Status:** ✅ Complete - Glass Inputs + Passkey Sign-In
+**Time Spent:** 20 minutes (input fix, passkey integration)
+**Complexity:** Low
+
+### 📚 Issues Identified (User Feedback):
+
+1. ❌ **BRIGHT BLUE INPUTS:** Inputs showing solid blue background with blue text
+2. ❌ **Missing Passkey:** No passkey/WebAuthn sign-in option
+
+### 🛠 Implementation Details:
+
+**What Fixed:**
+
+1. **Glass Input Fix** (`src/components/ui/input.tsx`)
+   - Removed `bg-background` class (was solid blue)
+   - Changed to `glass-input` class for glassmorphic effect
+   - Removed all shadcn default styling
+   - Now uses glass effect from globals.css:
+     - Transparent gradient background
+     - 16px backdrop blur
+     - Directional borders (top/left lighter)
+     - Radiant Amber focus state
+     - Black text (light) / White text (dark)
+
+2. **Passkey Sign-In Added** (`src/app/(auth)/login/page.tsx`)
+   - Added Fingerprint icon from lucide-react
+   - Implemented `handlePasskeySignIn()` with Better Auth
+   - Changed button layout to 2-column grid
+   - Google button (left) | Passkey button (right)
+   - Both buttons same size and style
+   - Uses Better Auth's passkey plugin (WebAuthn)
+
+**Glass Input Properties:**
+
+```css
+.glass-input {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+  backdrop-filter: blur(16px);
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: rgba(255, 255, 255, 0.8);
+  border-left-color: rgba(255, 255, 255, 0.8);
+  color: #2E3440; /* Dusk Slate - BLACK */
+}
+
+.glass-input:focus {
+  border-color: rgba(255, 168, 69, 0.5); /* Radiant Amber */
+  box-shadow: 0 0 0 3px rgba(255, 168, 69, 0.1);
+}
+
+.dark .glass-input {
+  background: linear-gradient(
+    135deg,
+    rgba(28, 31, 36, 0.9) 0%,
+    rgba(28, 31, 36, 0.7) 100%
+  );
+  color: #FFFFFF; /* Solar White - WHITE */
+}
+```
+
+**Better Auth Passkey Integration:**
+
+```typescript
+const handlePasskeySignIn = async () => {
+  setIsLoading(true);
+  setError("");
+  try {
+    await authClient.passkey.signIn();
+    router.push("/dashboard");
+  } catch (err) {
+    setError("Failed to sign in with passkey");
+    console.error("Passkey sign in error:", err);
+    setIsLoading(false);
+  }
+};
+```
+
+**Solinth Brand:**
+
+- ✅ Glass inputs: Transparent with blur ✅
+- ✅ Text: Black (light) / White (dark) - WCAG AA ✅
+- ✅ NO blue backgrounds ✅
+- ✅ Focus: Radiant Amber glow ✅
+- ✅ Passkey: Better Auth WebAuthn ✅
+
+### 🧠 Decisions Made:
+
+1. **Decision:** Use glass-input class instead of shadcn defaults
+   - **Reason:** Solinth design system requires glassmorphic inputs
+   - **Impact:** Consistent glass effect across all forms
+
+2. **Decision:** Add passkey sign-in alongside Google
+   - **Reason:** Better Auth has passkey plugin, modern auth method
+   - **Impact:** Users can use biometric/hardware keys for sign-in
+
+3. **Decision:** 2-column grid layout for auth buttons
+   - **Reason:** Equal visual weight for both auth methods
+   - **Impact:** Clean, balanced layout
+
+### 🧪 Testing Performed (Playwright):
+
+- ✅ Login page screenshot taken
+- ✅ Inputs: Glass effect visible (transparent with blur)
+- ✅ Text: Black (light mode) visible
+- ✅ NO blue backgrounds
+- ✅ Passkey button visible
+- ✅ 2-column grid layout working
+
+### 📋 Files Modified:
+
+1. **src/components/ui/input.tsx** - Changed to glass-input class
+2. **src/app/(auth)/login/page.tsx** - Added passkey sign-in
+
+### 🎯 Success Criteria Met:
+
+- ✅ Inputs: Glass effect (transparent with blur)
+- ✅ NO blue backgrounds
+- ✅ Text: Black (light) / White (dark) - WCAG AA
+- ✅ Focus: Radiant Amber glow
+- ✅ Passkey sign-in added
+- ✅ Better Auth integration complete
+- ✅ All changes committed and pushed
+
+### 🚀 Glass Inputs + Passkey: 100% COMPLETE
+
+**Inputs:** ✅ Glassmorphic (transparent with blur)
+**Text:** ✅ Black/white (WCAG AA)
+**Focus:** ✅ Radiant Amber
+**Passkey:** ✅ Better Auth WebAuthn
+**Design System:** ✅ Fully compliant
+
+**Total Changes:** 2 files modified
+**Status:** Ready for user verification
+
+---
+
+
 ## [2025-11-01] - Solinth - UI FIXES: Hydration, Colors, Focus States
 
 ### 🎯 Task Completed: Fixed Multiple UI Issues
