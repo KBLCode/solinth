@@ -27,7 +27,9 @@ export default function ResetPasswordPage() {
 
       setIsSuccess(true);
     } catch (err: unknown) {
-      setError(err.message || "Failed to send reset email");
+      setError(
+        err instanceof Error ? err.message : "Failed to send reset email"
+      );
     } finally {
       setIsLoading(false);
     }

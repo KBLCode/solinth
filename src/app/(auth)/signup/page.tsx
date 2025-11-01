@@ -353,7 +353,7 @@ export default function SignUp() {
               </BlurFade>
               <BlurFade delay={0.25 * 1}>
                 <p className="text-base font-medium text-dusk-slate/60 dark:text-sky-mist/60 md:text-lg">
-                  We'll use this to contact you
+                  We&apos;ll use this to contact you
                 </p>
               </BlurFade>
             </motion.div>

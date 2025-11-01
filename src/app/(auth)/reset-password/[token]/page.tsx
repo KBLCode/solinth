@@ -111,7 +111,7 @@ export default function ResetPasswordConfirmPage({ params }: PageProps) {
         router.push("/login?reset=success");
       }, 3000);
     } catch (err: unknown) {
-      setError(err.message || "Failed to reset password");
+      setError(err instanceof Error ? err.message : "Failed to reset password");
     } finally {
       setIsLoading(false);
     }

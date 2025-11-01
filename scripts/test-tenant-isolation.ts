@@ -88,8 +88,8 @@ async function testTenantIsolation() {
     // Test 3: Verify no cross-tenant data leaks
     console.log("\n3️⃣ Testing cross-tenant isolation...");
 
-    const tenant1UserIds = tenant1Users.map((u) => u.tenantId);
-    const tenant2UserIds = tenant2Users.map((u) => u.tenantId);
+    const tenant1UserIds = tenant1Users?.map((u) => u.tenantId) || [];
+    const tenant2UserIds = tenant2Users?.map((u) => u.tenantId) || [];
 
     const hasLeaks =
       tenant1UserIds.some((id) => id !== tenant1Id) ||
