@@ -22,120 +22,117 @@ export default function LoginPage() {
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-solar-white p-4 dark:bg-eclipse-black">
-      <div className="glass-card mx-auto w-full max-w-md space-y-6 rounded-2xl p-8">
-        <div className="space-y-2 text-center">
-          <Logo className="mx-auto h-16 w-16" size={64} showText={false} />
-          <h1 className="text-3xl font-semibold text-dusk-slate dark:text-solar-white">
-            Welcome back
-          </h1>
-          <p className="text-dusk-slate/70 dark:text-sky-mist/70">
-            Sign in to access your dashboard, settings and projects.
-          </p>
+    <div className="glass-card mx-auto w-full max-w-md space-y-6 rounded-2xl p-8">
+      <div className="space-y-2 text-center">
+        <h1 className="text-3xl font-semibold text-dusk-slate dark:text-solar-white">
+          Welcome back
+        </h1>
+        <p className="text-dusk-slate/70 dark:text-sky-mist/70">
+          Sign in to access your dashboard, settings and projects.
+        </p>
+      </div>
+
+      <div className="space-y-5">
+        <Button variant="outline" className="w-full justify-center gap-2">
+          <GoogleIcon className="h-4 w-4" />
+          Sign in with Google
+        </Button>
+
+        <div className="flex items-center gap-2">
+          <Separator className="flex-1" />
+          <span className="text-sm text-dusk-slate/60 dark:text-sky-mist/60">
+            or sign in with email
+          </span>
+          <Separator className="flex-1" />
         </div>
 
-        <div className="space-y-5">
-          <Button variant="outline" className="w-full justify-center gap-2">
-            <GoogleIcon className="h-4 w-4" />
-            Sign in with Google
-          </Button>
-
-          <div className="flex items-center gap-2">
-            <Separator className="flex-1" />
-            <span className="text-sm text-dusk-slate/60 dark:text-sky-mist/60">
-              or sign in with email
-            </span>
-            <Separator className="flex-1" />
-          </div>
-
-          <div className="space-y-6">
-            <div>
-              <Label
-                htmlFor="email"
-                className="text-dusk-slate dark:text-solar-white"
-              >
-                Email
-              </Label>
-              <div className="relative mt-2.5">
-                <Input
-                  id="email"
-                  className="peer ps-9"
-                  placeholder="you@company.com"
-                  type="email"
-                />
-                <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-dusk-slate/60 peer-disabled:opacity-50 dark:text-sky-mist/60">
-                  <Mail size={16} aria-hidden="true" />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between">
-                <Label
-                  htmlFor="password"
-                  className="text-dusk-slate dark:text-solar-white"
-                >
-                  Password
-                </Label>
-                <Link
-                  href="/reset-password"
-                  className="text-sm text-dusk-slate hover:text-dusk-slate/80 dark:text-solar-white dark:hover:text-solar-white/80"
-                >
-                  Forgot Password?
-                </Link>
-              </div>
-              <div className="relative mt-2.5">
-                <Input
-                  id="password"
-                  className="pe-9 ps-9"
-                  placeholder="Enter your password"
-                  type={isVisible ? "text" : "password"}
-                />
-                <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-dusk-slate/60 peer-disabled:opacity-50 dark:text-sky-mist/60">
-                  <Lock size={16} aria-hidden="true" />
-                </div>
-                <button
-                  className="focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-dusk-slate/60 outline-none transition-[color,box-shadow] hover:text-dusk-slate focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-sky-mist/60 dark:hover:text-solar-white"
-                  type="button"
-                  onClick={toggleVisibility}
-                  aria-label={isVisible ? "Hide password" : "Show password"}
-                  aria-pressed={isVisible}
-                  aria-controls="password"
-                >
-                  {isVisible ? (
-                    <EyeOff size={16} aria-hidden="true" />
-                  ) : (
-                    <Eye size={16} aria-hidden="true" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 pt-1">
-              <Checkbox id="remember-me" />
-              <Label
-                htmlFor="remember-me"
-                className="text-dusk-slate dark:text-solar-white"
-              >
-                Remember for 30 days
-              </Label>
-            </div>
-          </div>
-
-          <Button className="w-full bg-radiant-amber text-solar-white hover:bg-radiant-amber/90">
-            Sign in
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-
-          <div className="text-center text-sm text-dusk-slate/70 dark:text-sky-mist/70">
-            No account?{" "}
-            <Link
-              href="/signup"
-              className="font-medium text-dusk-slate hover:underline dark:text-solar-white"
+        <div className="space-y-6">
+          <div>
+            <Label
+              htmlFor="email"
+              className="text-dusk-slate dark:text-solar-white"
             >
-              Create an account
-            </Link>
+              Email
+            </Label>
+            <div className="relative mt-2.5">
+              <Input
+                id="email"
+                className="peer ps-9"
+                placeholder="you@company.com"
+                type="email"
+              />
+              <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-dusk-slate/60 peer-disabled:opacity-50 dark:text-sky-mist/60">
+                <Mail size={16} aria-hidden="true" />
+              </div>
+            </div>
           </div>
+
+          <div>
+            <div className="flex items-center justify-between">
+              <Label
+                htmlFor="password"
+                className="text-dusk-slate dark:text-solar-white"
+              >
+                Password
+              </Label>
+              <Link
+                href="/reset-password"
+                className="text-sm text-dusk-slate hover:text-dusk-slate/80 dark:text-solar-white dark:hover:text-solar-white/80"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+            <div className="relative mt-2.5">
+              <Input
+                id="password"
+                className="pe-9 ps-9"
+                placeholder="Enter your password"
+                type={isVisible ? "text" : "password"}
+              />
+              <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-dusk-slate/60 peer-disabled:opacity-50 dark:text-sky-mist/60">
+                <Lock size={16} aria-hidden="true" />
+              </div>
+              <button
+                className="focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-dusk-slate/60 outline-none transition-[color,box-shadow] hover:text-dusk-slate focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-sky-mist/60 dark:hover:text-solar-white"
+                type="button"
+                onClick={toggleVisibility}
+                aria-label={isVisible ? "Hide password" : "Show password"}
+                aria-pressed={isVisible}
+                aria-controls="password"
+              >
+                {isVisible ? (
+                  <EyeOff size={16} aria-hidden="true" />
+                ) : (
+                  <Eye size={16} aria-hidden="true" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 pt-1">
+            <Checkbox id="remember-me" />
+            <Label
+              htmlFor="remember-me"
+              className="text-dusk-slate dark:text-solar-white"
+            >
+              Remember for 30 days
+            </Label>
+          </div>
+        </div>
+
+        <Button className="w-full bg-radiant-amber text-solar-white hover:bg-radiant-amber/90">
+          Sign in
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+
+        <div className="text-center text-sm text-dusk-slate/70 dark:text-sky-mist/70">
+          No account?{" "}
+          <Link
+            href="/signup"
+            className="font-medium text-dusk-slate hover:underline dark:text-solar-white"
+          >
+            Create an account
+          </Link>
         </div>
       </div>
     </div>

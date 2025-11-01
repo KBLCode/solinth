@@ -11,13 +11,10 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-solar-white via-sky-mist/20 to-midday-sand/30 dark:from-eclipse-black dark:via-midnight-graphite dark:to-eclipse-black">
-      {/* Background Pattern */}
-      <div className="pointer-events-none fixed inset-0 bg-[url('/patterns/solar-gradient.svg')] opacity-5" />
-
+    <div className="min-h-screen bg-solar-white dark:bg-eclipse-black">
       {/* Glassmorphic Glow Effects */}
-      <div className="fixed left-20 top-20 h-96 w-96 animate-pulse rounded-full bg-radiant-amber/20 blur-3xl" />
-      <div className="fixed bottom-20 right-20 h-96 w-96 animate-pulse rounded-full bg-sky-mist/20 blur-3xl delay-1000" />
+      <div className="fixed left-20 top-20 h-96 w-96 animate-pulse rounded-full bg-radiant-amber/10 blur-3xl" />
+      <div className="fixed bottom-20 right-20 h-96 w-96 animate-pulse rounded-full bg-sky-mist/10 blur-3xl delay-1000" />
 
       {/* Content */}
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center p-4">
