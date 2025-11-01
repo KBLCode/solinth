@@ -67,7 +67,7 @@ export async function middleware(request: NextRequest) {
 
   // 2. Check for session cookie (Better Auth)
   const sessionCookie = request.cookies.get("better-auth.session_token");
-  const isAuthenticated = !!sessionCookie;
+  const isAuthenticated = Boolean(sessionCookie);
 
   // 2.5. Get session and tenant context for authenticated users
   let activeOrganizationId: string | null = null;

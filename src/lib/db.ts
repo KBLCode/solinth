@@ -11,7 +11,15 @@ import { PrismaClient } from "@prisma/client";
 import { createClient } from "@supabase/supabase-js";
 
 // Global instances for development
-const globalForPrisma = globalThis as unknown as {
+// eslint-disable-next-line no-var
+declare global {
+  // eslint-disable-next-line no-var
+  var prisma: PrismaClient | undefined;
+  // eslint-disable-next-line no-var
+  var supabase: ReturnType<typeof createClient> | undefined;
+}
+
+const globalForPrisma = global as typeof globalThis & {
   prisma: PrismaClient | undefined;
   supabase: ReturnType<typeof createClient> | undefined;
 };

@@ -48,7 +48,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
 
       if (response.ok) {
         const data = await response.json();
-        return !!data.session;
+        return Boolean(data.session);
       }
 
       return false;

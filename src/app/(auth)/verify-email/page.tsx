@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -12,6 +13,7 @@ export default function VerifyEmailPage() {
     "verifying"
   );
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [isResending, setIsResending] = useState(false);
 
   const token = searchParams.get("token");
@@ -73,7 +75,7 @@ export default function VerifyEmailPage() {
       }
 
       setError("");
-      alert("Verification email sent! Please check your inbox.");
+      setSuccessMessage("Verification email sent! Please check your inbox.");
     } catch (err: unknown) {
       setError(
         err instanceof Error

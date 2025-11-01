@@ -1,3 +1,4 @@
+import * as React from "react";
 import type { Metadata } from "next";
 import { Header } from "@/components/navigation/header";
 

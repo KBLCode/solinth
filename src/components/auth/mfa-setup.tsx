@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth/auth-client";
 import QRCode from "qrcode";

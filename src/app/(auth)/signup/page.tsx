@@ -412,7 +412,7 @@ export default function SignUp() {
                         onChange={(e) => setName(e.target.value)}
                         onKeyDown={handleKeyDown}
                         className={cn(
-                          "relative z-10 h-full w-0 flex-grow bg-transparent text-base text-dusk-slate transition-[padding-right] delay-300 duration-300 ease-in-out placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60 md:text-lg",
+                          "relative z-10 h-full w-0 grow bg-transparent text-base text-dusk-slate transition-[padding-right] delay-300 duration-300 ease-in-out placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60 md:text-lg",
                           isNameValid ? "pr-2" : "pr-0"
                         )}
                       />
@@ -468,7 +468,7 @@ export default function SignUp() {
                         onChange={(e) => setEmail(e.target.value)}
                         onKeyDown={handleKeyDown}
                         className={cn(
-                          "relative z-10 h-full w-0 flex-grow bg-transparent text-base text-dusk-slate transition-[padding-right] delay-300 duration-300 ease-in-out placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60 md:text-lg",
+                          "relative z-10 h-full w-0 grow bg-transparent text-base text-dusk-slate transition-[padding-right] delay-300 duration-300 ease-in-out placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60 md:text-lg",
                           isEmailValid ? "pr-2" : "pr-0"
                         )}
                       />
@@ -540,7 +540,7 @@ export default function SignUp() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        className="relative z-10 h-full w-0 flex-grow bg-transparent text-base text-dusk-slate placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60 md:text-lg"
+                        className="relative z-10 h-full w-0 grow bg-transparent text-base text-dusk-slate placeholder:text-dusk-slate/60 focus:outline-none dark:text-solar-white dark:placeholder:text-sky-mist/60 md:text-lg"
                       />
                       <div
                         className={cn(

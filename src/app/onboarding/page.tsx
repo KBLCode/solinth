@@ -10,6 +10,7 @@
  * PLAN Reference: Lines 128-147 (Task 1.4)
  */
 
+import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/auth-client";

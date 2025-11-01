@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -492,7 +493,7 @@ function PasswordRequirement({ met, text }: { met: boolean; text: string }) {
       >
         {met && (
           <svg
-            className="h-3 w-3 text-white"
+            className="size-3 text-white"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
