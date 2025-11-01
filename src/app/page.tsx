@@ -1,4 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { GlassButton } from "@/components/ui/glass-button";
+import {
+  GlassCard,
+  GlassCardHeader,
+  GlassCardTitle,
+  GlassCardDescription,
+} from "@/components/ui/glass-card";
 import Link from "next/link";
 
 export default function HomePage() {
@@ -20,8 +27,15 @@ export default function HomePage() {
               &ldquo;If it can&apos;t be measured, it can&apos;t be fixed&rdquo;
             </p>
 
-            {/* Glassmorphic Buttons Demo */}
+            {/* Glass Buttons Demo - NEW */}
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+              <GlassButton size="lg">Get Started Free</GlassButton>
+              <GlassButton size="default">Sign In</GlassButton>
+              <GlassButton size="sm">View Demo</GlassButton>
+            </div>
+
+            {/* Original Buttons */}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
               <Button asChild size="lg">
                 <Link href="/signup">Get Started Free</Link>
               </Button>
@@ -37,7 +51,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Glass Card Demo */}
+          {/* Glass Card Demo - NEW COMPONENT */}
           <div className="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             {[
               { name: "Business Suite", desc: "Core metrics & integrations" },
@@ -45,14 +59,16 @@ export default function HomePage() {
               { name: "Custom Dashboards", desc: "Sandbox API connections" },
               { name: "Reporting Suite", desc: "Automated insights" },
             ].map((suite, index) => (
-              <div key={index} className="glass-card space-y-3 p-6 text-center">
-                <h3 className="text-lg font-semibold text-dusk-slate dark:text-solar-white">
-                  {suite.name}
-                </h3>
-                <p className="text-sm text-dusk-slate/70 dark:text-sky-mist/70">
-                  {suite.desc}
-                </p>
-              </div>
+              <GlassCard key={index} className="text-center">
+                <GlassCardHeader>
+                  <GlassCardTitle className="text-solar-white">
+                    {suite.name}
+                  </GlassCardTitle>
+                  <GlassCardDescription className="text-sky-mist/70">
+                    {suite.desc}
+                  </GlassCardDescription>
+                </GlassCardHeader>
+              </GlassCard>
             ))}
           </div>
 
