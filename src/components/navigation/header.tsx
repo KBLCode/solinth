@@ -146,14 +146,14 @@ export function Header() {
 
   return (
     <>
-      <div className="fixed left-0 right-0 top-0 z-[100] py-3 transition-all duration-300">
+      <div className="fixed left-0 right-0 top-0 z-[100] transition-all duration-300">
         <motion.nav
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
           className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8"
         >
-          <div className="glass-navbar glass-navbar-custom mx-2 rounded-full sm:mx-0">
+          <div className="glass-navbar-custom mx-2 rounded-full sm:mx-0">
             <div className="flex items-center justify-between px-3 py-3 sm:px-6">
               <motion.div
                 className="flex items-center"

@@ -21,7 +21,7 @@ export default function AuthLayout({
       <div className="fixed bottom-20 right-20 h-96 w-96 animate-pulse rounded-full bg-sky-mist/10 blur-3xl delay-1000" />
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center p-4 pt-20">
         {children}
       </div>
     </div>
