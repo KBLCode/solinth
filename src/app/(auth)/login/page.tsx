@@ -5,10 +5,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Logo } from "@/components/ui/logo";
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import { authClient } from "@/lib/auth/auth-client";
+import { useRouter } from "next/navigation";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
@@ -18,8 +19,48 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export default function LoginPage() {
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
+
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    try {
+      await authClient.signIn.email({
+        email,
+        password,
+        rememberMe,
+      });
+      router.push("/dashboard");
+    } catch (err) {
+      setError("Invalid email or password");
+      console.error("Sign in error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/dashboard",
+      });
+    } catch (err) {
+      setError("Failed to sign in with Google");
+      console.error("Google sign in error:", err);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="glass-card mx-auto w-full max-w-md space-y-6 rounded-2xl p-8">
@@ -27,13 +68,24 @@ export default function LoginPage() {
         <h1 className="text-3xl font-semibold text-dusk-slate dark:text-solar-white">
           Welcome back
         </h1>
-        <p className="text-dusk-slate/70 dark:text-sky-mist/70">
+        <p className="text-dusk-slate/60 dark:text-sky-mist/60">
           Sign in to access your dashboard, settings and projects.
         </p>
       </div>
 
+      {error && (
+        <div className="bg-destructive/10 text-destructive rounded-lg p-3 text-sm">
+          {error}
+        </div>
+      )}
+
       <div className="space-y-5">
-        <Button variant="outline" className="w-full justify-center gap-2">
+        <Button
+          variant="outline"
+          className="w-full justify-center gap-2"
+          onClick={handleGoogleSignIn}
+          disabled={isLoading}
+        >
           <GoogleIcon className="h-4 w-4" />
           Sign in with Google
         </Button>
@@ -46,7 +98,7 @@ export default function LoginPage() {
           <Separator className="flex-1" />
         </div>
 
-        <div className="space-y-6">
+        <form onSubmit={handleEmailSignIn} className="space-y-6">
           <div>
             <Label
               htmlFor="email"
@@ -60,6 +112,10 @@ export default function LoginPage() {
                 className="peer ps-9"
                 placeholder="you@company.com"
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isLoading}
               />
               <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-dusk-slate/60 peer-disabled:opacity-50 dark:text-sky-mist/60">
                 <Mail size={16} aria-hidden="true" />
@@ -88,6 +144,10 @@ export default function LoginPage() {
                 className="pe-9 ps-9"
                 placeholder="Enter your password"
                 type={isVisible ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={isLoading}
               />
               <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-dusk-slate/60 peer-disabled:opacity-50 dark:text-sky-mist/60">
                 <Lock size={16} aria-hidden="true" />
@@ -99,6 +159,7 @@ export default function LoginPage() {
                 aria-label={isVisible ? "Hide password" : "Show password"}
                 aria-pressed={isVisible}
                 aria-controls="password"
+                disabled={isLoading}
               >
                 {isVisible ? (
                   <EyeOff size={16} aria-hidden="true" />
@@ -110,7 +171,12 @@ export default function LoginPage() {
           </div>
 
           <div className="flex items-center gap-2 pt-1">
-            <Checkbox id="remember-me" />
+            <Checkbox
+              id="remember-me"
+              checked={rememberMe}
+              onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+              disabled={isLoading}
+            />
             <Label
               htmlFor="remember-me"
               className="text-dusk-slate dark:text-solar-white"
@@ -118,14 +184,18 @@ export default function LoginPage() {
               Remember for 30 days
             </Label>
           </div>
-        </div>
 
-        <Button className="w-full bg-radiant-amber text-solar-white hover:bg-radiant-amber/90">
-          Sign in
-          <ArrowRight className="h-4 w-4" />
-        </Button>
+          <Button
+            type="submit"
+            className="w-full bg-radiant-amber text-solar-white hover:bg-radiant-amber/90"
+            disabled={isLoading}
+          >
+            {isLoading ? "Signing in..." : "Sign in"}
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </form>
 
-        <div className="text-center text-sm text-dusk-slate/70 dark:text-sky-mist/70">
+        <div className="text-center text-sm text-dusk-slate/60 dark:text-sky-mist/60">
           No account?{" "}
           <Link
             href="/signup"

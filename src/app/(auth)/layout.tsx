@@ -20,10 +20,10 @@ export default function AuthLayout({
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center p-4">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <h1 className="bg-gradient-to-r from-radiant-amber to-amber-500 bg-clip-text text-4xl font-bold text-transparent">
+          <h1 className="text-4xl font-bold text-dusk-slate dark:text-solar-white">
             Solinth
           </h1>
-          <p className="mt-2 text-sm text-dusk-slate/70 dark:text-sky-mist/70">
+          <p className="mt-2 text-sm text-dusk-slate/60 dark:text-sky-mist/60">
             If it can&apos;t be measured, it can&apos;t be fixed
           </p>
         </div>
