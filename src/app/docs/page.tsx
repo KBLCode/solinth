@@ -1,11 +1,11 @@
 "use client";
 
-import { Navbar } from "@/components/navigation/navbar";
+import { Header } from "@/components/navigation/header";
 
 export default function DocsPage() {
   return (
     <div className="min-h-screen bg-solar-white dark:bg-eclipse-black">
-      <Navbar />
+      <Header />
 
       <div className="flex min-h-screen items-center justify-center px-4 pt-32">
         <div className="glass-card max-w-4xl p-16 text-center">

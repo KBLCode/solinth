@@ -259,18 +259,6 @@ export default function SignIn() {
 
       <div
         className={cn(
-          "fixed left-4 top-4 z-20 flex items-center gap-2",
-          "md:left-1/2 md:-translate-x-1/2"
-        )}
-      >
-        <Logo size={32} showText={false} />
-        <h1 className="text-base font-bold text-dusk-slate dark:text-solar-white">
-          Solinth
-        </h1>
-      </div>
-
-      <div
-        className={cn(
           "flex h-full w-full flex-1 items-center justify-center",
           "relative overflow-hidden"
         )}

@@ -14,14 +14,14 @@
  * 🔄 1.6 - Contact Section
  */
 
-import { Navbar } from "@/components/navigation/navbar";
+import { Header } from "@/components/navigation/header";
 import { Hero } from "@/components/marketing/hero";
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-solar-white dark:bg-eclipse-black">
       {/* Navigation */}
-      <Navbar />
+      <Header />
 
       {/* Hero Section */}
       <Hero />
