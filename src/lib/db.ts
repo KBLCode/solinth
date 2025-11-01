@@ -48,7 +48,7 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 export async function setTenantContext(tenantId: string) {
   // For Supabase client, we'll handle RLS through policies
   // This is a placeholder for compatibility
-  console.log(`Setting tenant context: ${tenantId}`);
+  console.error(`Setting tenant context: ${tenantId}`);
 }
 
 /**
@@ -56,7 +56,7 @@ export async function setTenantContext(tenantId: string) {
  */
 export async function clearTenantContext() {
   // Placeholder for compatibility
-  console.log("Clearing tenant context");
+  console.error("Clearing tenant context");
 }
 
 /**
@@ -112,10 +112,7 @@ export function createTenantClient(tenantId: string): TenantSupabaseClient {
 export async function checkDatabaseHealth(): Promise<boolean> {
   try {
     // Use Supabase client for health check
-    const { data, error } = await supabase
-      .from("tenants")
-      .select("id")
-      .limit(1);
+    const { error } = await supabase.from("tenants").select("id").limit(1);
 
     if (error) {
       console.error("Database health check failed:", error);
@@ -165,7 +162,7 @@ export const db = {
   tenant: {
     findMany: async (options?: {
       take?: number;
-      where?: Record<string, any>;
+      where?: Record<string, string | number | boolean>;
     }) => {
       const query = supabase.from("tenants").select("*");
 
@@ -200,7 +197,7 @@ export const db = {
   user: {
     findMany: async (options?: {
       take?: number;
-      where?: Record<string, any>;
+      where?: Record<string, string | number | boolean>;
     }) => {
       const query = supabase.from("users").select("*");
 
@@ -224,7 +221,7 @@ export const db = {
   metric: {
     findMany: async (options?: {
       take?: number;
-      where?: Record<string, any>;
+      where?: Record<string, string | number | boolean>;
     }) => {
       const query = supabase.from("metrics").select("*");
 
@@ -243,7 +240,7 @@ export const db = {
       return data;
     },
 
-    count: async (where?: Record<string, any>) => {
+    count: async (where?: Record<string, string | number | boolean>) => {
       const query = supabase
         .from("metrics")
         .select("*", { count: "exact", head: true });

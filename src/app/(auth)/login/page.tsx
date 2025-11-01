@@ -24,7 +24,7 @@ export default function LoginPage() {
         password,
       });
       router.push("/dashboard");
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.message || "Failed to sign in");
     } finally {
       setIsLoading(false);
@@ -40,7 +40,7 @@ export default function LoginPage() {
         autoFill: true,
       });
       router.push("/dashboard");
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.message || "Failed to sign in with passkey");
     } finally {
       setIsLoading(false);
@@ -54,7 +54,7 @@ export default function LoginPage() {
         provider: "github",
         callbackURL: "/dashboard",
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.message || "Failed to sign in with GitHub");
       setIsLoading(false);
     }
@@ -67,7 +67,7 @@ export default function LoginPage() {
         provider: "google",
         callbackURL: "/dashboard",
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.message || "Failed to sign in with Google");
       setIsLoading(false);
     }
@@ -341,7 +341,7 @@ export default function LoginPage() {
 
         {/* Sign Up Link */}
         <p className="mt-6 text-center text-sm text-dusk-slate/70 dark:text-sky-mist/70">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             href="/signup"
             className="font-medium text-radiant-amber transition-colors hover:text-amber-600"

@@ -27,7 +27,7 @@ export default function AuthLayout({
             Solinth
           </h1>
           <p className="mt-2 text-sm text-dusk-slate/70 dark:text-sky-mist/70">
-            If it can't be measured, it can't be fixed
+            If it can&apos;t be measured, it can&apos;t be fixed
           </p>
         </div>
 

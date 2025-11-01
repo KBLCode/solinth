@@ -66,7 +66,7 @@ export default function SignupPage() {
       });
 
       setStep("verification");
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.message || "Failed to create account");
       setIsLoading(false);
     }
@@ -426,7 +426,7 @@ export default function SignupPage() {
               Check your email
             </h2>
             <p className="mb-6 text-sm text-dusk-slate/70 dark:text-sky-mist/70">
-              We've sent a verification link to <strong>{email}</strong>
+              We&apos;ve sent a verification link to <strong>{email}</strong>
             </p>
 
             <div className="mb-6 rounded-lg bg-sky-mist/10 p-4 dark:bg-sky-mist/5">

@@ -110,7 +110,7 @@ export default function ResetPasswordConfirmPage({ params }: PageProps) {
       setTimeout(() => {
         router.push("/login?reset=success");
       }, 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.message || "Failed to reset password");
     } finally {
       setIsLoading(false);

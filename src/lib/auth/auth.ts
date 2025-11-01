@@ -47,7 +47,12 @@ export const auth = betterAuth({
       membershipLimit: 100,
       requireEmailVerificationOnInvitation: true,
 
-      async sendInvitationEmail(data: any) {
+      async sendInvitationEmail(data: {
+        id: string;
+        email: string;
+        organization: { name: string };
+        inviter: { user: { name: string } };
+      }) {
         const inviteLink = `${process.env.BETTER_AUTH_URL}/accept-invitation/${data.id}`;
 
         await resend.emails.send({
@@ -94,9 +99,12 @@ export const auth = betterAuth({
         });
       },
 
-      onInvitationAccepted: async (data: any) => {
+      onInvitationAccepted: async (data: {
+        acceptedUser: { email: string };
+        organization: { name: string };
+      }) => {
         // Log invitation acceptance, send welcome email, etc.
-        console.log(
+        console.error(
           `User ${data.acceptedUser.email} joined ${data.organization.name}`
         );
       },
@@ -161,7 +169,13 @@ export const auth = betterAuth({
           },
         ],
 
-        authorizeReference: async ({ user, referenceId }: any) => {
+        authorizeReference: async ({
+          user,
+          referenceId,
+        }: {
+          user: { id: string };
+          referenceId: string;
+        }) => {
           // Check if user has permission to manage subscriptions for this organization
           const member = await prisma.authMember.findFirst({
             where: {
@@ -173,20 +187,30 @@ export const auth = betterAuth({
           return member?.role === "owner" || member?.role === "admin";
         },
 
-        onSubscriptionComplete: async ({ subscription, plan }: any) => {
-          console.log(
+        onSubscriptionComplete: async ({
+          subscription,
+          plan,
+        }: {
+          subscription: { id: string };
+          plan: { name: string };
+        }) => {
+          console.error(
             `Subscription created: ${subscription.id} for plan: ${plan.name}`
           );
         },
 
-        onSubscriptionCancel: async ({ subscription }: any) => {
-          console.log(`Subscription cancelled: ${subscription.id}`);
+        onSubscriptionCancel: async ({
+          subscription,
+        }: {
+          subscription: { id: string };
+        }) => {
+          console.error(`Subscription cancelled: ${subscription.id}`);
         },
       },
 
-      onCustomerCreate: async ({ customer, user }: any) => {
-        console.log(
-          `Stripe customer ${customer.id} created for user ${user.id}`
+      onCustomerCreate: async ({ stripeCustomer, user }) => {
+        console.error(
+          `Stripe customer ${stripeCustomer.id} created for user ${user.id}`
         );
       },
     }),
@@ -194,7 +218,13 @@ export const auth = betterAuth({
 
   // Email configuration using Resend
   emailVerification: {
-    sendVerificationEmail: async ({ user, url }: any) => {
+    sendVerificationEmail: async ({
+      user,
+      url,
+    }: {
+      user: { email: string };
+      url: string;
+    }) => {
       await resend.emails.send({
         from: "Solinth <noreply@solinth.com>",
         to: user.email,
@@ -238,7 +268,13 @@ export const auth = betterAuth({
 
   // Password reset configuration
   forgotPassword: {
-    sendResetEmail: async ({ user, url }: any) => {
+    sendResetEmail: async ({
+      user,
+      url,
+    }: {
+      user: { email: string };
+      url: string;
+    }) => {
       await resend.emails.send({
         from: "Solinth <noreply@solinth.com>",
         to: user.email,

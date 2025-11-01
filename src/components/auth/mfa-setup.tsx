@@ -49,7 +49,7 @@ export function MfaSetup({ onComplete, onCancel }: MfaSetupProps) {
       setQrCodeUrl(qrCode);
       setSecret(data.secret);
       setBackupCodes(data.backupCodes || []);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.message || "Failed to generate MFA secret");
     } finally {
       setIsLoading(false);
@@ -78,7 +78,7 @@ export function MfaSetup({ onComplete, onCancel }: MfaSetupProps) {
       }
 
       setStep("success");
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.message || "Failed to verify code");
     } finally {
       setIsLoading(false);

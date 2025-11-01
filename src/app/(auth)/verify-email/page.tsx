@@ -45,7 +45,7 @@ export default function VerifyEmailPage() {
       setTimeout(() => {
         router.push("/dashboard");
       }, 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setStatus("error");
       setError(err.message || "Failed to verify email");
     }
@@ -74,7 +74,7 @@ export default function VerifyEmailPage() {
 
       setError("");
       alert("Verification email sent! Please check your inbox.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.message || "Failed to resend verification email");
     } finally {
       setIsResending(false);
